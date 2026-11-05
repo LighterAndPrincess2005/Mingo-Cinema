@@ -105,18 +105,34 @@ function renderMovies() {
   $('#result-count').textContent = number(movies.length) + ' phim';
   $('#movies').innerHTML = movies.map(movie => {
     const [accent, shade] = palettes[state.catalog.movies.indexOf(movie) % palettes.length];
-    return `<article class="movie"><button class="poster db-poster" style="--accent:${accent};--shade:${shade}" data-act="detail" data-id="${e(movie._id)}" aria-label="Xem chi tiết ${e(movie.title)}">
-      ${movieArt(movie)}<span class="rating">${e(movie.media?.year || '')}</span><span class="poster-fallback">CinePass<br>${e(movie.title)}</span></button>
-      <div class="movie-body"><h3>${e(movie.title)}</h3><p class="original-title">${e(movie.media?.originalTitle || '')}</p>
-      <p class="format">${e(genreNames(movie).join(' · '))}</p>
-      <p>${movie.durationMin} phút · ${e(movie.language)}</p>
-      <div class="movie-actions">${movie.status === 'now_showing' ? button('Đặt vé ↗', 'schedule', movie._id, 'primary') : button('Chi tiết', 'detail', movie._id)}
-      ${trailerButton(movie)}</div></div></article>`;
+    const original = movie.media?.originalTitle;
+    const genres = genreNames(movie).join(' · ');
+    const metadata = [movie.durationMin && movie.durationMin + ' phút', movie.language, movie.media?.year].filter(Boolean).join(' · ');
+    return `<article class="movie">
+      <div class="movie-cover">
+        <button type="button" class="poster db-poster" style="--accent:${accent};--shade:${shade}"
+          data-act="detail" data-id="${e(movie._id)}" aria-label="Xem chi tiết ${e(movie.title)}">
+          ${movieArt(movie)}<span class="poster-fallback">CinePass<br>${e(movie.title)}</span>
+        </button>
+        ${trailerButton(movie, 'movie-trailer')}
+      </div>
+      <div class="movie-body">
+        <h3>${button(e(movie.title), 'detail', movie._id, 'movie-title')}</h3>
+        ${original && normalize(original) !== normalize(movie.title) ? `<p class="original-title">${e(original)}</p>` : ''}
+        ${genres ? `<p class="movie-genres">${e(genres)}</p>` : ''}
+        <p class="movie-meta">${e(metadata)}</p>
+        <div class="movie-actions">${movie.status === 'now_showing'
+          ? button('Đặt vé', 'schedule', movie._id, 'primary', `aria-label="Đặt vé ${e(movie.title)}"`)
+          : button('Chi tiết', 'detail', movie._id, 'soft', `aria-label="Chi tiết ${e(movie.title)}"`)}</div>
+      </div>
+    </article>`;
   }).join('') || empty('Không tìm thấy phim phù hợp.');
 }
 
-function trailerButton(movie) {
-  return Object.hasOwn(trailers, movie.slug) ? button('▶ Trailer', 'trailer', movie._id) : '';
+function trailerButton(movie, type = 'soft') {
+  return Object.hasOwn(trailers, movie.slug)
+    ? button('▶ Trailer', 'trailer', movie._id, type, `aria-label="Xem trailer ${e(movie.title)}"`)
+    : '';
 }
 
 function showTrailer(movie) {
@@ -535,12 +551,11 @@ $('#quick-book').addEventListener('submit', event => {
 });
 
 dialog.addEventListener('close', () => {
+  if (dialog.open) return;
   request++;
   clearInterval(timer);
-  if (!dialog.open) {
-    currentReceipt = null;
-    content.replaceChildren();
-  }
+  currentReceipt = null;
+  content.replaceChildren();
 });
 $('#search').addEventListener('input', () => { if (state.catalog) renderMovies(); });
 $('#genre').addEventListener('change', () => { if (state.catalog) renderMovies(); });
