@@ -45,3 +45,5 @@
   .database-hero:before { background:linear-gradient(90deg,#140e27f2 5%,#140e278f 75%),linear-gradient(0deg,#140e27,transparent 48%); }
   .movie-actions button { padding-inline:8px; font-size:12px; }
 }
+
+.schedule-filters select { max-width:min(72vw,320px); }

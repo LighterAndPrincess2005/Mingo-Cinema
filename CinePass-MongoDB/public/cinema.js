@@ -130,9 +130,9 @@ function showTrailer(movie) {
     <a class="soft" href="https://www.youtube.com/watch?v=${video}" target="_blank" rel="noopener noreferrer">Mở trên YouTube ↗</a></div>`, 'TRAILER CHÍNH THỨC', true);
 }
 
-function openSchedule(movie = '', cinema = '') {
+function openSchedule(movie = '', cinema = '', selectedDay = '') {
   state.movie = movie;
-  state.day = '';
+  state.day = selectedDay;
   state.cinema = cinema;
   load('Lịch chiếu', () => api('schedule', movie ? { movie } : {}), data => {
     state.schedule = data;
@@ -158,8 +158,10 @@ function detail({ movie, people, reviews }) {
 }
 
 function drawSchedule() {
-  const cinemaShows = state.schedule.filter(show => !state.cinema || show.cinemaId === state.cinema);
-  const days = [...new Set(cinemaShows.map(show => day(show.startTime)))];
+  const future = state.schedule.filter(show => new Date(show.startTime).getTime() > Date.now());
+  const availableCinemas = new Set(future.map(show => show.cinemaId));
+  const cinemaShows = future.filter(show => !state.cinema || show.cinemaId === state.cinema);
+  const days = [...new Set(future.map(show => day(show.startTime)))];
   if (!days.includes(state.day)) state.day = days[0];
   const titles = state.catalog.movies.find(movie => movie._id === state.movie);
   const selected = cinemaShows.filter(show => day(show.startTime) === state.day);
@@ -167,14 +169,18 @@ function drawSchedule() {
   panel(titles?.title || 'Lịch chiếu', `<div class="options schedule-days" aria-label="Ngày chiếu">${days.map(key => button(
     e(new Intl.DateTimeFormat('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit', timeZone: vn.timeZone }).format(new Date(key + 'T12:00:00+07:00'))),
     'day', key, 'option', `aria-pressed="${key === state.day}"`)).join('')}</div>
-    <label class="inline">Rạp <select id="cinema"><option value="">Tất cả rạp</option>${state.catalog.cinemas.map(cinema =>
-    `<option value="${e(cinema._id)}" ${cinema._id === state.cinema ? 'selected' : ''}>${e(cinema.city)} · ${e(cinema.name)}</option>`).join('')}</select></label>
+    <div class="card-row schedule-filters">
+    <label class="inline">Phim <select id="schedule-film"><option value="">Tất cả phim</option>${state.catalog.movies.filter(movie => movie.status === 'now_showing').map(movie =>
+    `<option value="${e(movie._id)}" ${movie._id === state.movie ? 'selected' : ''}>${e(movie.title)}</option>`).join('')}</select></label>
+    <label class="inline">Rạp <select id="cinema"><option value="">Tất cả rạp</option>${state.catalog.cinemas.filter(cinema =>
+    availableCinemas.has(cinema._id) || cinema._id === state.cinema).map(cinema =>
+    `<option value="${e(cinema._id)}" ${cinema._id === state.cinema ? 'selected' : ''}>${e(cinema.city)} · ${e(cinema.name)}</option>`).join('')}</select></label></div>
     <div class="data-list">${[...groups].map(([id, shows]) => {
       const cinema = state.catalog.cinemas.find(cinema => cinema._id === id);
       return `<article class="record"><h3>${e(shows[0].snapshot.cinemaName)}</h3><p>${e(cinema?.address)}</p>
       <div class="card-row">${shows.map(show => button(e((state.movie ? '' : show.snapshot.movieTitle + ' · ') +
         time(show.startTime) + ' · ' + show.format + ' · ' + show.snapshot.roomName), 'seatmap', show._id, 'option')).join('')}</div></article>`;
-    }).join('') || empty('Chưa có suất mở bán cho lựa chọn này.')}</div>`, 'BƯỚC 1 / 3 · CHỌN SUẤT', true);
+    }).join('') || empty('Không có suất phù hợp. Hãy chọn ngày, phim hoặc rạp khác.')}</div>`, 'BƯỚC 1 / 3 · CHỌN SUẤT', true);
 }
 
 function showSummary(show) {
@@ -227,7 +233,7 @@ function checkout({ profile, tier }) {
     <datalist id="promo-codes">${state.catalog.promotions.map(promo => `<option value="${e(promo.code)}">${e(promo.name)}</option>`).join('')}</datalist>
     <label>Điểm sử dụng · ${e(tier?.name)} · Có ${number(profile.pointsBalance)} điểm
     <input type="number" name="points" min="0" max="${Math.max(profile.pointsBalance, 0)}" value="0"></label></div>
-    <p class="summary">MongoDB xác nhận giá, ưu đãi và giữ ghế trong 10 phút.</p>
+    <p class="summary">Ghế được giữ tối đa 10 phút và đến trước giờ chiếu. Giá và ưu đãi được xác nhận khi giữ ghế.</p>
     <div class="checkout">${button('Quay lại ghế', 'seatmap', state.show._id)} <button class="primary">Giữ ghế ↗</button></div></form>`, 'BƯỚC 3 / 3 · GIỮ GHẾ');
 }
 
@@ -415,7 +421,7 @@ document.addEventListener('click', event => {
       if (movie) showTrailer(movie);
       break;
     }
-    case 'schedule-back': drawSchedule(); break;
+    case 'schedule-back': openSchedule(state.movie, state.cinema, state.day); break;
     case 'day':
       state.day = id;
       drawSchedule();
@@ -465,9 +471,11 @@ document.addEventListener('click', event => {
 });
 
 content.addEventListener('change', event => {
+  if (event.target.id === 'schedule-film') openSchedule(event.target.value, state.cinema, state.day);
   if (event.target.id === 'cinema') {
     state.cinema = event.target.value;
     drawSchedule();
+    $('#cinema').focus();
   }
 
 });

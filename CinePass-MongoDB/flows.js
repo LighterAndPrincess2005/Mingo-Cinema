@@ -105,11 +105,20 @@
 
   // Vấn đề 1 và 2: một lệnh update nguyên tử, chỉ thành công khi TẤT CẢ ghế còn trống.
   // Ghế held đã quá holdUntil được coi là trống.
+  function openShowtimeFilter(now = new Date()) {
+    return {
+      status: 'open', startTime: { $gt: now },
+      movieId: { $in: d.movies.distinct('_id', { status: 'now_showing' }) },
+      cinemaId: { $in: d.cinemas.distinct('_id', { status: 'active' }) },
+      roomId: { $in: d.rooms.distinct('_id', { status: 'active' }) },
+    };
+  }
+
   function holdSeats({ showtimeId, seatCodes, holdToken, holdUntil, now }) {
     const result = d.showtimes.updateOne(
       {
         _id: showtimeId,
-        status: 'open',
+        ...openShowtimeFilter(now),
         'seats.code': { $all: seatCodes },
         seats: {
           $not: {
@@ -286,7 +295,7 @@
     const subtotal = ticketAmount + concessionAmount;
     const _id = new ObjectId();
     const holdToken = new ObjectId().toHexString();
-    const expiresAt = addMinutes(now, config.HOLD_MINUTES);
+    const expiresAt = new Date(Math.min(addMinutes(now, config.HOLD_MINUTES), showtime.startTime));
     if (!holdSeats({ showtimeId, seatCodes: codes, holdToken, holdUntil: expiresAt, now })) {
       fail('SEAT_TAKEN', 'Có ghế đã được người khác giữ hoặc mua');
     }
@@ -351,6 +360,9 @@
     if (!duplicate) {
       if (booking.status !== 'pending') fail('BOOKING_NOT_PENDING', `Đơn đang ở trạng thái ${booking.status}`);
       if (booking.expiresAt <= now) fail('BOOKING_EXPIRED', 'Đơn đã hết hạn giữ ghế');
+      if (!d.showtimes.findOne({ ...openShowtimeFilter(now), _id: booking.showtimeId }, { _id: 1 })) {
+        fail('SHOWTIME_CLOSED', 'Suất chiếu không còn mở bán');
+      }
     }
 
     try {
@@ -593,7 +605,7 @@
   }
 
   globalThis.flows = {
-    config, resolvePrice, createShowtime, holdSeats, createBooking, recordFailedPayment, payBooking,
+    config, resolvePrice, createShowtime, openShowtimeFilter, holdSeats, createBooking, recordFailedPayment, payBooking,
     releaseBooking, expireOverdueBookings, checkInTicket, refundTickets, rejectRefund, submitReview,
     recalcMovieRating, syncUser,
   };

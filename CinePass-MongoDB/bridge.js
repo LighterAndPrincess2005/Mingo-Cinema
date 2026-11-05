@@ -68,12 +68,16 @@ const handlers = {
         { userId: 0, ticketId: 0 }, { createdAt: -1 }, 10) };
   },
   schedule() {
-    const filter = { status: 'open', startTime: { $gt: new Date() } };
-    if (input.movie) filter.movieId = id(input.movie);
+    const filter = flows.openShowtimeFilter();
+    if (input.movie) {
+      const movieId = id(input.movie);
+      if (!filter.movieId.$in.some(active => active.equals(movieId))) return [];
+      filter.movieId = movieId;
+    }
     return rows('showtimes', filter, { seats: 0 }, { startTime: 1 });
   },
   seats() {
-    const show = cinemaDb.showtimes.findOne({ _id: id(input.id), status: 'open', startTime: { $gt: new Date() } });
+    const show = cinemaDb.showtimes.findOne({ ...flows.openShowtimeFilter(), _id: id(input.id) });
     if (!show) throw Error('Suất chiếu không còn mở bán.');
     const room = cinemaDb.rooms.findOne({ _id: show.roomId }, { seatMap: 1, capacity: 1, name: 1 });
     const types = rows('seat_types');
@@ -172,5 +176,3 @@ try {
 } catch (error) {
   print('CINEPASS:' + JSON.stringify({ error: error.message }));
 }
-
-
