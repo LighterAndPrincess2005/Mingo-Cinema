@@ -130,20 +130,31 @@ function renderMovies() {
 }
 
 function trailerButton(movie, type = 'soft') {
-  return Object.hasOwn(trailers, movie.slug)
-    ? button('▶ Trailer', 'trailer', movie._id, type, `aria-label="Xem trailer ${e(movie.title)}"`)
-    : '';
+  const action = Object.hasOwn(trailers, movie.slug) ? 'Xem trailer' : 'Tìm trailer';
+  const text = type === 'movie-trailer' && action === 'Xem trailer' ? 'Trailer' : action;
+  return button(`▶ ${text}`, 'trailer', movie._id, type, `aria-label="${action} ${e(movie.title)}"`);
 }
 
 function showTrailer(movie) {
-  const video = trailers[movie.slug];
-  if (!Object.hasOwn(trailers, movie.slug) || !/^[A-Za-z0-9_-]{11}$/.test(video)) return;
-  panel(movie.title, `<iframe class="trailer-frame" src="https://www.youtube-nocookie.com/embed/${video}"
-    title="Trailer ${e(movie.title)}" referrerpolicy="strict-origin-when-cross-origin"
-    allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
-    <div class="card-row trailer-actions">${button('Chi tiết phim', 'detail', movie._id)}
-    ${movie.status === 'now_showing' ? button('Chọn suất ↗', 'schedule', movie._id, 'primary') : ''}
-    <a class="soft" href="https://www.youtube.com/watch?v=${video}" target="_blank" rel="noopener noreferrer">Mở trên YouTube ↗</a></div>`, 'TRAILER CHÍNH THỨC', true);
+  const source = Object.hasOwn(trailers, movie.slug) ? trailers[movie.slug] : '';
+  const isVideo = /^[A-Za-z0-9_-]{11}$/.test(source);
+  const query = [movie.media?.originalTitle || movie.title, movie.media?.year, 'official trailer'].filter(Boolean).join(' ');
+  const href = isVideo ? `https://www.youtube.com/watch?v=${source}` : source ||
+    'https://www.youtube.com/results?' + new URLSearchParams({ search_query: query });
+  const heading = source ? 'TRAILER CHÍNH THỨC' : 'TÌM TRAILER';
+  const preview = isVideo
+    ? `<iframe class="trailer-frame" src="https://www.youtube-nocookie.com/embed/${source}"
+        title="Trailer ${e(movie.title)}" referrerpolicy="strict-origin-when-cross-origin"
+        allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>`
+    : `<p>${source ? 'Trailer có trên trang chính thức của nhà phát hành.' :
+        'CinePass chưa có trailer đã xác minh cho phim này. Bạn có thể tìm trên YouTube theo tên gốc và năm phát hành.'}</p>`;
+  const linkLabel = isVideo ? 'Mở trên YouTube ↗' : source ? 'Xem trên Netflix ↗' : 'Tìm trên YouTube ↗';
+  panel(movie.title, `${preview}
+    <div class="card-row trailer-actions">
+      <a class="soft" href="${e(href)}" target="_blank" rel="noopener noreferrer">${linkLabel}</a>
+      ${button('Chi tiết phim', 'detail', movie._id)}
+      ${movie.status === 'now_showing' ? button('Chọn suất ↗', 'schedule', movie._id, 'primary') : ''}
+    </div>`, heading, isVideo);
 }
 
 function openSchedule(movie = '', cinema = '', selectedDay = '') {
@@ -157,7 +168,7 @@ function openSchedule(movie = '', cinema = '', selectedDay = '') {
 }
 
 function detail({ movie, people, reviews }) {
-  const trailer = trailerButton(movie) || '<button class="soft" disabled>Chưa có trailer</button>';
+  const trailer = trailerButton(movie);
   panel(movie.title, `<section class="film-cover">
     <div class="film-backdrop" aria-hidden="true">${movieArt(movie, true)}</div>
     <div class="film-poster" aria-hidden="true">${movieArt(movie)}</div>
