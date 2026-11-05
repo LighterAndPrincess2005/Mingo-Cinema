@@ -1,0 +1,18 @@
+{"_id":{"$oid":"6aebf9dcfc47767e5936839d"},"name":"Hành động","slug":"hanh-dong"}
+{"_id":{"$oid":"6aebf9dcfc47767e5936839e"},"name":"Phiêu lưu","slug":"phieu-luu"}
+{"_id":{"$oid":"6aebf9dcfc47767e5936839f"},"name":"Hoạt hình","slug":"hoat-hinh"}
+{"_id":{"$oid":"6aebf9dcfc47767e593683a0"},"name":"Hài","slug":"hai"}
+{"_id":{"$oid":"6aebf9dcfc47767e593683a1"},"name":"Tội phạm","slug":"toi-pham"}
+{"_id":{"$oid":"6aebf9dcfc47767e593683a2"},"name":"Tài liệu","slug":"tai-lieu"}
+{"_id":{"$oid":"6aebf9dcfc47767e593683a3"},"name":"Chính kịch","slug":"chinh-kich"}
+{"_id":{"$oid":"6aebf9dcfc47767e593683a4"},"name":"Gia đình","slug":"gia-dinh"}
+{"_id":{"$oid":"6aebf9dcfc47767e593683a5"},"name":"Giả tưởng","slug":"gia-tuong"}
+{"_id":{"$oid":"6aebf9dcfc47767e593683a6"},"name":"Kinh dị","slug":"kinh-di"}
+{"_id":{"$oid":"6aebf9dcfc47767e593683a7"},"name":"Lãng mạn","slug":"lang-man"}
+{"_id":{"$oid":"6aebf9dcfc47767e593683a8"},"name":"Khoa học viễn tưởng","slug":"khoa-hoc-vien-tuong"}
+{"_id":{"$oid":"6aec0aee7067e3e7e21b154d"},"name":"Hình sự","slug":"hinh-su"}
+{"_id":{"$oid":"6aec0aee7067e3e7e21b154e"},"name":"Gây cấn","slug":"gay-can"}
+{"_id":{"$oid":"6aec0aef7067e3e7e21b1573"},"name":"Tình Cảm","slug":"tinh-cam"}
+{"_id":{"$oid":"6aec0af07067e3e7e21b157e"},"name":"Bí ẩn","slug":"bi-an"}
+{"_id":{"$oid":"6aec0af07067e3e7e21b15c0"},"name":"Cổ Trang","slug":"co-trang"}
+{"_id":{"$oid":"6aec0af07067e3e7e21b15e1"},"name":"Chiến tranh","slug":"chien-tranh"}

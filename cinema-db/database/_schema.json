@@ -1,0 +1,2813 @@
+{
+  "bookings": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "bookingCode",
+            "userId",
+            "showtimeId",
+            "seatCodes",
+            "holdToken",
+            "concessions",
+            "ticketAmount",
+            "concessionAmount",
+            "subtotal",
+            "discountAmount",
+            "pointsUsed",
+            "pointsDiscount",
+            "totalAmount",
+            "status",
+            "expiresAt",
+            "createdAt",
+            "snapshot"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "bookingCode": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^BK[0-9A-F]{10}$"
+            },
+            "userId": {
+              "bsonType": "objectId"
+            },
+            "showtimeId": {
+              "bsonType": "objectId"
+            },
+            "seatCodes": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "string",
+                "minLength": {
+                  "$numberInt": "1"
+                }
+              },
+              "minItems": {
+                "$numberInt": "1"
+              }
+            },
+            "holdToken": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "concessions": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "object",
+                "required": [
+                  "itemId",
+                  "name",
+                  "unitPrice",
+                  "quantity",
+                  "lineTotal"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "itemId": {
+                    "bsonType": "objectId"
+                  },
+                  "name": {
+                    "bsonType": "string",
+                    "minLength": {
+                      "$numberInt": "1"
+                    }
+                  },
+                  "unitPrice": {
+                    "bsonType": "number",
+                    "multipleOf": {
+                      "$numberInt": "1"
+                    },
+                    "minimum": {
+                      "$numberInt": "0"
+                    }
+                  },
+                  "quantity": {
+                    "bsonType": "number",
+                    "multipleOf": {
+                      "$numberInt": "1"
+                    },
+                    "minimum": {
+                      "$numberInt": "1"
+                    },
+                    "maximum": {
+                      "$numberInt": "20"
+                    }
+                  },
+                  "lineTotal": {
+                    "bsonType": "number",
+                    "multipleOf": {
+                      "$numberInt": "1"
+                    },
+                    "minimum": {
+                      "$numberInt": "0"
+                    }
+                  }
+                }
+              },
+              "minItems": {
+                "$numberInt": "0"
+              }
+            },
+            "ticketAmount": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "concessionAmount": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "subtotal": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "discountAmount": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "pointsUsed": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "pointsDiscount": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "totalAmount": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "promotionId": {
+              "bsonType": "objectId"
+            },
+            "promotionCode": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "status": {
+              "enum": [
+                "pending",
+                "paid",
+                "cancelled",
+                "expired",
+                "partially_refunded",
+                "refunded"
+              ]
+            },
+            "expiresAt": {
+              "bsonType": "date"
+            },
+            "paidAt": {
+              "bsonType": "date"
+            },
+            "createdAt": {
+              "bsonType": "date"
+            },
+            "snapshot": {
+              "bsonType": "object",
+              "required": [
+                "movieTitle",
+                "cinemaName",
+                "roomName",
+                "startTime"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "movieTitle": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "cinemaName": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "roomName": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "startTime": {
+                  "bsonType": "date"
+                }
+              }
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "bookingCode": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "bookingCode_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "userId": {
+            "$numberInt": "1"
+          },
+          "createdAt": {
+            "$numberInt": "-1"
+          }
+        },
+        "name": "userId_1_createdAt_-1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "showtimeId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "showtimeId_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "status": {
+            "$numberInt": "1"
+          },
+          "expiresAt": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "status_1_expiresAt_1"
+      }
+    ]
+  },
+  "cinemas": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "code",
+            "name",
+            "city",
+            "address",
+            "location",
+            "phone",
+            "openTime",
+            "closeTime",
+            "status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "code": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "name": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "city": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "address": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "location": {
+              "bsonType": "object",
+              "required": [
+                "type",
+                "coordinates"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "enum": [
+                    "Point"
+                  ]
+                },
+                "coordinates": {
+                  "bsonType": "array",
+                  "minItems": {
+                    "$numberInt": "2"
+                  },
+                  "maxItems": {
+                    "$numberInt": "2"
+                  },
+                  "items": {
+                    "bsonType": "number"
+                  }
+                }
+              }
+            },
+            "phone": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^0[0-9]{9}$"
+            },
+            "openTime": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+            },
+            "closeTime": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+            },
+            "status": {
+              "enum": [
+                "active",
+                "closed"
+              ]
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "code": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "code_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "location": "2dsphere"
+        },
+        "name": "location_2dsphere",
+        "2dsphereIndexVersion": {
+          "$numberInt": "3"
+        }
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "city": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "city_1"
+      }
+    ]
+  },
+  "concession_items": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "name",
+            "type",
+            "components",
+            "price",
+            "status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "name": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "type": {
+              "enum": [
+                "single",
+                "combo"
+              ]
+            },
+            "components": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "object",
+                "required": [
+                  "itemId",
+                  "quantity"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "itemId": {
+                    "bsonType": "objectId"
+                  },
+                  "quantity": {
+                    "bsonType": "number",
+                    "multipleOf": {
+                      "$numberInt": "1"
+                    },
+                    "minimum": {
+                      "$numberInt": "1"
+                    },
+                    "maximum": {
+                      "$numberInt": "10"
+                    }
+                  }
+                }
+              },
+              "minItems": {
+                "$numberInt": "0"
+              }
+            },
+            "price": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "status": {
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "name": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "name_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "type": {
+            "$numberInt": "1"
+          },
+          "status": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "type_1_status_1"
+      }
+    ]
+  },
+  "genres": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "name",
+            "slug"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "name": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "slug": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^[a-z0-9-]+$"
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "slug": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "slug_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "name": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "name_1",
+        "unique": true
+      }
+    ]
+  },
+  "loyalty_transactions": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "userId",
+            "type",
+            "points",
+            "refType",
+            "refId",
+            "createdAt"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "userId": {
+              "bsonType": "objectId"
+            },
+            "type": {
+              "enum": [
+                "earn",
+                "redeem",
+                "expire",
+                "adjust"
+              ]
+            },
+            "points": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              }
+            },
+            "refType": {
+              "enum": [
+                "booking",
+                "refund",
+                "manual"
+              ]
+            },
+            "refId": {
+              "bsonType": "objectId"
+            },
+            "description": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "createdAt": {
+              "bsonType": "date"
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "refType": {
+            "$numberInt": "1"
+          },
+          "refId": {
+            "$numberInt": "1"
+          },
+          "type": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "refType_1_refId_1_type_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "userId": {
+            "$numberInt": "1"
+          },
+          "createdAt": {
+            "$numberInt": "-1"
+          }
+        },
+        "name": "userId_1_createdAt_-1"
+      }
+    ]
+  },
+  "membership_tiers": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "code",
+            "name",
+            "rank",
+            "minSpend",
+            "pointMultiplier",
+            "benefits"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "code": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "name": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "rank": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "1"
+              }
+            },
+            "minSpend": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "pointMultiplier": {
+              "bsonType": "number",
+              "minimum": {
+                "$numberInt": "1"
+              }
+            },
+            "benefits": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "string",
+                "minLength": {
+                  "$numberInt": "1"
+                }
+              },
+              "minItems": {
+                "$numberInt": "0"
+              }
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "code": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "code_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "minSpend": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "minSpend_1"
+      }
+    ]
+  },
+  "movies": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "title",
+            "slug",
+            "genreIds",
+            "credits",
+            "durationMin",
+            "ageRating",
+            "formats",
+            "language",
+            "releaseDate",
+            "status",
+            "synopsis",
+            "ratingSummary"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "title": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "slug": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "genreIds": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "objectId"
+              },
+              "minItems": {
+                "$numberInt": "1"
+              }
+            },
+            "credits": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "object",
+                "required": [
+                  "personId",
+                  "name",
+                  "role"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "personId": {
+                    "bsonType": "objectId"
+                  },
+                  "name": {
+                    "bsonType": "string",
+                    "minLength": {
+                      "$numberInt": "1"
+                    }
+                  },
+                  "role": {
+                    "enum": [
+                      "director",
+                      "actor",
+                      "writer"
+                    ]
+                  },
+                  "character": {
+                    "bsonType": "string",
+                    "minLength": {
+                      "$numberInt": "1"
+                    }
+                  }
+                }
+              },
+              "minItems": {
+                "$numberInt": "1"
+              }
+            },
+            "durationMin": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "30"
+              },
+              "maximum": {
+                "$numberInt": "300"
+              }
+            },
+            "ageRating": {
+              "enum": [
+                "P",
+                "K",
+                "T13",
+                "T16",
+                "T18"
+              ]
+            },
+            "formats": {
+              "bsonType": "array",
+              "items": {
+                "enum": [
+                  "2D",
+                  "3D",
+                  "IMAX"
+                ]
+              },
+              "minItems": {
+                "$numberInt": "1"
+              }
+            },
+            "language": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "releaseDate": {
+              "bsonType": "date"
+            },
+            "status": {
+              "enum": [
+                "coming_soon",
+                "now_showing",
+                "ended"
+              ]
+            },
+            "synopsis": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "posterUrl": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "ratingSummary": {
+              "bsonType": "object",
+              "required": [
+                "avg",
+                "count"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "avg": {
+                  "bsonType": "number",
+                  "minimum": {
+                    "$numberInt": "0"
+                  },
+                  "maximum": {
+                    "$numberInt": "10"
+                  }
+                },
+                "count": {
+                  "bsonType": "number",
+                  "multipleOf": {
+                    "$numberInt": "1"
+                  },
+                  "minimum": {
+                    "$numberInt": "0"
+                  }
+                }
+              }
+            },
+            "backdropUrl": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "media": {
+              "bsonType": "object",
+              "additionalProperties": false,
+              "required": [
+                "provider",
+                "id",
+                "slug",
+                "title",
+                "originalTitle",
+                "apiUrl",
+                "year",
+                "posterUrl",
+                "backdropUrl",
+                "posterSize",
+                "backdropSize",
+                "syncedAt"
+              ],
+              "properties": {
+                "provider": {
+                  "enum": [
+                    "NguonC"
+                  ]
+                },
+                "id": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "slug": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "title": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "originalTitle": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "apiUrl": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "year": {
+                  "bsonType": "number",
+                  "minimum": {
+                    "$numberInt": "1880"
+                  },
+                  "maximum": {
+                    "$numberInt": "2100"
+                  }
+                },
+                "posterUrl": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "backdropUrl": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "posterSize": {
+                  "bsonType": "array",
+                  "minItems": {
+                    "$numberInt": "2"
+                  },
+                  "maxItems": {
+                    "$numberInt": "2"
+                  },
+                  "items": {
+                    "bsonType": "number",
+                    "minimum": {
+                      "$numberInt": "1"
+                    }
+                  }
+                },
+                "backdropSize": {
+                  "bsonType": "array",
+                  "minItems": {
+                    "$numberInt": "2"
+                  },
+                  "maxItems": {
+                    "$numberInt": "2"
+                  },
+                  "items": {
+                    "bsonType": "number",
+                    "minimum": {
+                      "$numberInt": "1"
+                    }
+                  }
+                },
+                "syncedAt": {
+                  "bsonType": "date"
+                }
+              }
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "slug": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "slug_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "status": {
+            "$numberInt": "1"
+          },
+          "releaseDate": {
+            "$numberInt": "-1"
+          }
+        },
+        "name": "status_1_releaseDate_-1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "genreIds": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "genreIds_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "credits.personId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "credits.personId_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "_fts": "text",
+          "_ftsx": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "title_text",
+        "weights": {
+          "title": {
+            "$numberInt": "1"
+          }
+        },
+        "default_language": "none",
+        "language_override": "textIndexLanguage",
+        "textIndexVersion": {
+          "$numberInt": "3"
+        }
+      }
+    ]
+  },
+  "payments": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "bookingId",
+            "userId",
+            "amount",
+            "method",
+            "status",
+            "transactionRef",
+            "idempotencyKey",
+            "createdAt"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "bookingId": {
+              "bsonType": "objectId"
+            },
+            "userId": {
+              "bsonType": "objectId"
+            },
+            "amount": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "method": {
+              "enum": [
+                "momo",
+                "vnpay",
+                "card",
+                "bank_transfer"
+              ]
+            },
+            "status": {
+              "enum": [
+                "success",
+                "failed",
+                "requires_refund"
+              ]
+            },
+            "transactionRef": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "idempotencyKey": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "paidAt": {
+              "bsonType": "date"
+            },
+            "createdAt": {
+              "bsonType": "date"
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "transactionRef": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "transactionRef_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "idempotencyKey": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "idempotencyKey_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "bookingId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "bookingId_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "status": {
+            "$numberInt": "1"
+          },
+          "paidAt": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "status_1_paidAt_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "userId": {
+            "$numberInt": "1"
+          },
+          "status": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "userId_1_status_1"
+      }
+    ]
+  },
+  "people": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "fullName",
+            "nationality"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "fullName": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "nationality": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "birthYear": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "1900"
+              },
+              "maximum": {
+                "$numberInt": "2030"
+              }
+            },
+            "bio": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "fullName": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "fullName_1"
+      }
+    ]
+  },
+  "price_rules": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "name",
+            "format",
+            "seatTypeId",
+            "dayType",
+            "timeFrom",
+            "timeTo",
+            "price",
+            "priority",
+            "validFrom",
+            "status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "name": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "format": {
+              "enum": [
+                "2D",
+                "3D",
+                "IMAX"
+              ]
+            },
+            "seatTypeId": {
+              "bsonType": "objectId"
+            },
+            "dayType": {
+              "enum": [
+                "all",
+                "weekday",
+                "weekend"
+              ]
+            },
+            "timeFrom": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+            },
+            "timeTo": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+            },
+            "cinemaId": {
+              "bsonType": "objectId"
+            },
+            "price": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "priority": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "1"
+              }
+            },
+            "validFrom": {
+              "bsonType": "date"
+            },
+            "validTo": {
+              "bsonType": "date"
+            },
+            "status": {
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "format": {
+            "$numberInt": "1"
+          },
+          "seatTypeId": {
+            "$numberInt": "1"
+          },
+          "status": {
+            "$numberInt": "1"
+          },
+          "priority": {
+            "$numberInt": "-1"
+          }
+        },
+        "name": "format_1_seatTypeId_1_status_1_priority_-1"
+      }
+    ]
+  },
+  "promotion_redemptions": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "promotionId",
+            "userId",
+            "bookingId",
+            "useNo",
+            "discountAmount",
+            "status",
+            "createdAt"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "promotionId": {
+              "bsonType": "objectId"
+            },
+            "userId": {
+              "bsonType": "objectId"
+            },
+            "bookingId": {
+              "bsonType": "objectId"
+            },
+            "useNo": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "1"
+              }
+            },
+            "discountAmount": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "status": {
+              "enum": [
+                "reserved",
+                "applied",
+                "reversed"
+              ]
+            },
+            "createdAt": {
+              "bsonType": "date"
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "promotionId": {
+            "$numberInt": "1"
+          },
+          "userId": {
+            "$numberInt": "1"
+          },
+          "useNo": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "promotionId_1_userId_1_useNo_1",
+        "unique": true,
+        "partialFilterExpression": {
+          "status": {
+            "$in": [
+              "reserved",
+              "applied"
+            ]
+          }
+        }
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "promotionId": {
+            "$numberInt": "1"
+          },
+          "bookingId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "promotionId_1_bookingId_1",
+        "unique": true,
+        "partialFilterExpression": {
+          "status": {
+            "$in": [
+              "reserved",
+              "applied"
+            ]
+          }
+        }
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "bookingId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "bookingId_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "userId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "userId_1"
+      }
+    ]
+  },
+  "promotions": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "code",
+            "name",
+            "discountType",
+            "discountValue",
+            "minOrder",
+            "maxUses",
+            "usedCount",
+            "perUserLimit",
+            "startAt",
+            "endAt",
+            "status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "code": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^[A-Z0-9]+$"
+            },
+            "name": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "discountType": {
+              "enum": [
+                "percent",
+                "fixed"
+              ]
+            },
+            "discountValue": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "maxDiscount": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "minOrder": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "maxUses": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "1"
+              }
+            },
+            "usedCount": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "perUserLimit": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "1"
+              }
+            },
+            "startAt": {
+              "bsonType": "date"
+            },
+            "endAt": {
+              "bsonType": "date"
+            },
+            "status": {
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "conditions": {
+              "bsonType": "object",
+              "additionalProperties": false,
+              "properties": {
+                "formats": {
+                  "bsonType": "array",
+                  "items": {
+                    "enum": [
+                      "2D",
+                      "3D",
+                      "IMAX"
+                    ]
+                  },
+                  "minItems": {
+                    "$numberInt": "0"
+                  }
+                },
+                "daysOfWeek": {
+                  "bsonType": "array",
+                  "items": {
+                    "bsonType": "number",
+                    "multipleOf": {
+                      "$numberInt": "1"
+                    },
+                    "minimum": {
+                      "$numberInt": "0"
+                    },
+                    "maximum": {
+                      "$numberInt": "6"
+                    }
+                  },
+                  "minItems": {
+                    "$numberInt": "0"
+                  }
+                },
+                "tierCodes": {
+                  "bsonType": "array",
+                  "items": {
+                    "bsonType": "string",
+                    "minLength": {
+                      "$numberInt": "1"
+                    }
+                  },
+                  "minItems": {
+                    "$numberInt": "0"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "code": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "code_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "status": {
+            "$numberInt": "1"
+          },
+          "endAt": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "status_1_endAt_1"
+      }
+    ]
+  },
+  "refunds": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "paymentId",
+            "bookingId",
+            "userId",
+            "ticketIds",
+            "amount",
+            "reason",
+            "status",
+            "approvedBy",
+            "createdAt"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "paymentId": {
+              "bsonType": "objectId"
+            },
+            "bookingId": {
+              "bsonType": "objectId"
+            },
+            "userId": {
+              "bsonType": "objectId"
+            },
+            "ticketIds": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "objectId"
+              },
+              "minItems": {
+                "$numberInt": "1"
+              }
+            },
+            "amount": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "reason": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "status": {
+              "enum": [
+                "completed",
+                "rejected"
+              ]
+            },
+            "approvedBy": {
+              "bsonType": "objectId"
+            },
+            "createdAt": {
+              "bsonType": "date"
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "bookingId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "bookingId_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "paymentId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "paymentId_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "userId": {
+            "$numberInt": "1"
+          },
+          "status": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "userId_1_status_1"
+      }
+    ]
+  },
+  "reviews": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "movieId",
+            "userId",
+            "ticketId",
+            "rating",
+            "status",
+            "createdAt"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "movieId": {
+              "bsonType": "objectId"
+            },
+            "userId": {
+              "bsonType": "objectId"
+            },
+            "ticketId": {
+              "bsonType": "objectId"
+            },
+            "rating": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "1"
+              },
+              "maximum": {
+                "$numberInt": "10"
+              }
+            },
+            "comment": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "status": {
+              "enum": [
+                "visible",
+                "hidden"
+              ]
+            },
+            "createdAt": {
+              "bsonType": "date"
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "movieId": {
+            "$numberInt": "1"
+          },
+          "userId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "movieId_1_userId_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "ticketId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "ticketId_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "movieId": {
+            "$numberInt": "1"
+          },
+          "status": {
+            "$numberInt": "1"
+          },
+          "createdAt": {
+            "$numberInt": "-1"
+          }
+        },
+        "name": "movieId_1_status_1_createdAt_-1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "userId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "userId_1"
+      }
+    ]
+  },
+  "rooms": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "cinemaId",
+            "name",
+            "format",
+            "seatMap",
+            "capacity",
+            "status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "cinemaId": {
+              "bsonType": "objectId"
+            },
+            "name": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "format": {
+              "enum": [
+                "2D",
+                "3D",
+                "IMAX"
+              ]
+            },
+            "seatMap": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "object",
+                "required": [
+                  "row",
+                  "seatCount",
+                  "seatTypeId"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "row": {
+                    "bsonType": "string",
+                    "minLength": {
+                      "$numberInt": "1"
+                    },
+                    "pattern": "^[A-Z]$"
+                  },
+                  "seatCount": {
+                    "bsonType": "number",
+                    "multipleOf": {
+                      "$numberInt": "1"
+                    },
+                    "minimum": {
+                      "$numberInt": "1"
+                    },
+                    "maximum": {
+                      "$numberInt": "40"
+                    }
+                  },
+                  "seatTypeId": {
+                    "bsonType": "objectId"
+                  }
+                }
+              },
+              "minItems": {
+                "$numberInt": "1"
+              }
+            },
+            "capacity": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "1"
+              }
+            },
+            "status": {
+              "enum": [
+                "active",
+                "maintenance",
+                "closed"
+              ]
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "cinemaId": {
+            "$numberInt": "1"
+          },
+          "name": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "cinemaId_1_name_1",
+        "unique": true
+      }
+    ]
+  },
+  "seat_types": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "code",
+            "name",
+            "personsPerSeat"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "code": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "name": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "personsPerSeat": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "1"
+              },
+              "maximum": {
+                "$numberInt": "2"
+              }
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "code": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "code_1",
+        "unique": true
+      }
+    ]
+  },
+  "showtimes": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "movieId",
+            "cinemaId",
+            "roomId",
+            "startTime",
+            "endTime",
+            "format",
+            "language",
+            "seats",
+            "status",
+            "snapshot"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "movieId": {
+              "bsonType": "objectId"
+            },
+            "cinemaId": {
+              "bsonType": "objectId"
+            },
+            "roomId": {
+              "bsonType": "objectId"
+            },
+            "startTime": {
+              "bsonType": "date"
+            },
+            "endTime": {
+              "bsonType": "date"
+            },
+            "format": {
+              "enum": [
+                "2D",
+                "3D",
+                "IMAX"
+              ]
+            },
+            "language": {
+              "enum": [
+                "subtitle",
+                "dubbed"
+              ]
+            },
+            "seats": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "object",
+                "required": [
+                  "code",
+                  "seatTypeId",
+                  "price",
+                  "status"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "bsonType": "string",
+                    "minLength": {
+                      "$numberInt": "1"
+                    },
+                    "pattern": "^[A-Z][0-9]{2}$"
+                  },
+                  "seatTypeId": {
+                    "bsonType": "objectId"
+                  },
+                  "price": {
+                    "bsonType": "number",
+                    "multipleOf": {
+                      "$numberInt": "1"
+                    },
+                    "minimum": {
+                      "$numberInt": "0"
+                    }
+                  },
+                  "status": {
+                    "enum": [
+                      "available",
+                      "held",
+                      "booked"
+                    ]
+                  },
+                  "holdUntil": {
+                    "bsonType": "date"
+                  },
+                  "holdToken": {
+                    "bsonType": "string",
+                    "minLength": {
+                      "$numberInt": "1"
+                    }
+                  },
+                  "bookingId": {
+                    "bsonType": "objectId"
+                  }
+                }
+              },
+              "minItems": {
+                "$numberInt": "1"
+              }
+            },
+            "status": {
+              "enum": [
+                "open",
+                "ended",
+                "cancelled"
+              ]
+            },
+            "snapshot": {
+              "bsonType": "object",
+              "required": [
+                "movieTitle",
+                "cinemaName",
+                "roomName"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "movieTitle": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "cinemaName": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                },
+                "roomName": {
+                  "bsonType": "string",
+                  "minLength": {
+                    "$numberInt": "1"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "roomId": {
+            "$numberInt": "1"
+          },
+          "startTime": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "roomId_1_startTime_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "movieId": {
+            "$numberInt": "1"
+          },
+          "startTime": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "movieId_1_startTime_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "cinemaId": {
+            "$numberInt": "1"
+          },
+          "startTime": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "cinemaId_1_startTime_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "status": {
+            "$numberInt": "1"
+          },
+          "startTime": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "status_1_startTime_1"
+      }
+    ]
+  },
+  "staff": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "cinemaId",
+            "fullName",
+            "email",
+            "position",
+            "permissions",
+            "status",
+            "hiredAt"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "cinemaId": {
+              "bsonType": "objectId"
+            },
+            "fullName": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "email": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+            },
+            "position": {
+              "enum": [
+                "manager",
+                "cashier",
+                "ticket_checker"
+              ]
+            },
+            "permissions": {
+              "bsonType": "array",
+              "items": {
+                "enum": [
+                  "ticket_check",
+                  "refund_approve",
+                  "showtime_manage",
+                  "sell_counter"
+                ]
+              },
+              "minItems": {
+                "$numberInt": "0"
+              }
+            },
+            "status": {
+              "enum": [
+                "active",
+                "inactive"
+              ]
+            },
+            "hiredAt": {
+              "bsonType": "date"
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "email": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "email_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "cinemaId": {
+            "$numberInt": "1"
+          },
+          "position": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "cinemaId_1_position_1"
+      }
+    ]
+  },
+  "tickets": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "bookingId",
+            "showtimeId",
+            "movieId",
+            "userId",
+            "seatCode",
+            "seatTypeId",
+            "price",
+            "qrCode",
+            "status",
+            "createdAt"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "bookingId": {
+              "bsonType": "objectId"
+            },
+            "showtimeId": {
+              "bsonType": "objectId"
+            },
+            "movieId": {
+              "bsonType": "objectId"
+            },
+            "userId": {
+              "bsonType": "objectId"
+            },
+            "seatCode": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "seatTypeId": {
+              "bsonType": "objectId"
+            },
+            "price": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "qrCode": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "status": {
+              "enum": [
+                "active",
+                "used",
+                "refunded",
+                "void"
+              ]
+            },
+            "checkedInAt": {
+              "bsonType": "date"
+            },
+            "checkedInBy": {
+              "bsonType": "objectId"
+            },
+            "refundId": {
+              "bsonType": "objectId"
+            },
+            "createdAt": {
+              "bsonType": "date"
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "qrCode": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "qrCode_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "showtimeId": {
+            "$numberInt": "1"
+          },
+          "seatCode": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "showtimeId_1_seatCode_1",
+        "unique": true,
+        "partialFilterExpression": {
+          "status": {
+            "$in": [
+              "active",
+              "used"
+            ]
+          }
+        }
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "bookingId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "bookingId_1"
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "userId": {
+            "$numberInt": "1"
+          },
+          "movieId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "userId_1_movieId_1"
+      }
+    ]
+  },
+  "users": {
+    "options": {
+      "validator": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "fullName",
+            "email",
+            "phone",
+            "passwordHash",
+            "tierId",
+            "pointsBalance",
+            "lifetimeSpend",
+            "status",
+            "createdAt"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_id": {
+              "bsonType": "objectId"
+            },
+            "fullName": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "email": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+            },
+            "phone": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              },
+              "pattern": "^0[0-9]{9}$"
+            },
+            "passwordHash": {
+              "bsonType": "string",
+              "minLength": {
+                "$numberInt": "1"
+              }
+            },
+            "dateOfBirth": {
+              "bsonType": "date"
+            },
+            "tierId": {
+              "bsonType": "objectId"
+            },
+            "pointsBalance": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "lifetimeSpend": {
+              "bsonType": "number",
+              "multipleOf": {
+                "$numberInt": "1"
+              },
+              "minimum": {
+                "$numberInt": "0"
+              }
+            },
+            "status": {
+              "enum": [
+                "active",
+                "locked"
+              ]
+            },
+            "createdAt": {
+              "bsonType": "date"
+            }
+          }
+        }
+      },
+      "validationLevel": "strict",
+      "validationAction": "error"
+    },
+    "indexes": [
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "email": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "email_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "phone": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "phone_1",
+        "unique": true
+      },
+      {
+        "v": {
+          "$numberInt": "2"
+        },
+        "key": {
+          "tierId": {
+            "$numberInt": "1"
+          }
+        },
+        "name": "tierId_1"
+      }
+    ]
+  }
+}

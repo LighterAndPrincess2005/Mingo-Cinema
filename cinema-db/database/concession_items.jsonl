@@ -1,0 +1,15 @@
+{"_id":{"$oid":"6aebf9dcfc47767e59368459"},"name":"Bắp rang bơ nhỏ","type":"single","components":[],"price":{"$numberInt":"45000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e5936845a"},"name":"Bắp rang bơ vừa","type":"single","components":[],"price":{"$numberInt":"55000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e5936845b"},"name":"Bắp rang bơ lớn","type":"single","components":[],"price":{"$numberInt":"65000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e5936845c"},"name":"Bắp caramel vừa","type":"single","components":[],"price":{"$numberInt":"62000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e5936845d"},"name":"Nước ngọt nhỏ","type":"single","components":[],"price":{"$numberInt":"30000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e5936845e"},"name":"Nước ngọt vừa","type":"single","components":[],"price":{"$numberInt":"35000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e5936845f"},"name":"Nước ngọt lớn","type":"single","components":[],"price":{"$numberInt":"40000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e59368460"},"name":"Nước suối","type":"single","components":[],"price":{"$numberInt":"20000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e59368461"},"name":"Hotdog","type":"single","components":[],"price":{"$numberInt":"45000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e59368462"},"name":"Nachos phô mai","type":"single","components":[],"price":{"$numberInt":"60000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e59368463"},"name":"Khoai tây lắc","type":"single","components":[],"price":{"$numberInt":"50000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e59368464"},"name":"Combo Solo","type":"combo","components":[{"itemId":{"$oid":"6aebf9dcfc47767e5936845a"},"quantity":{"$numberInt":"1"}},{"itemId":{"$oid":"6aebf9dcfc47767e5936845e"},"quantity":{"$numberInt":"1"}}],"price":{"$numberInt":"79000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e59368465"},"name":"Combo Đôi","type":"combo","components":[{"itemId":{"$oid":"6aebf9dcfc47767e5936845b"},"quantity":{"$numberInt":"1"}},{"itemId":{"$oid":"6aebf9dcfc47767e5936845e"},"quantity":{"$numberInt":"2"}}],"price":{"$numberInt":"109000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e59368466"},"name":"Combo Gia Đình","type":"combo","components":[{"itemId":{"$oid":"6aebf9dcfc47767e5936845b"},"quantity":{"$numberInt":"2"}},{"itemId":{"$oid":"6aebf9dcfc47767e5936845f"},"quantity":{"$numberInt":"4"}}],"price":{"$numberInt":"219000"},"status":"active"}
+{"_id":{"$oid":"6aebf9dcfc47767e59368467"},"name":"Combo Snack","type":"combo","components":[{"itemId":{"$oid":"6aebf9dcfc47767e59368462"},"quantity":{"$numberInt":"1"}},{"itemId":{"$oid":"6aebf9dcfc47767e59368461"},"quantity":{"$numberInt":"1"}},{"itemId":{"$oid":"6aebf9dcfc47767e5936845e"},"quantity":{"$numberInt":"1"}}],"price":{"$numberInt":"125000"},"status":"active"}

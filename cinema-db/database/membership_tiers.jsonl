@@ -1,0 +1,4 @@
+{"_id":{"$oid":"6aebf9dcfc47767e593682d1"},"code":"MEMBER","name":"Thành viên","rank":{"$numberInt":"1"},"minSpend":{"$numberInt":"0"},"pointMultiplier":{"$numberInt":"1"},"benefits":["Tích điểm cơ bản"]}
+{"_id":{"$oid":"6aebf9dcfc47767e593682d2"},"code":"SILVER","name":"Bạc","rank":{"$numberInt":"2"},"minSpend":{"$numberInt":"2500000"},"pointMultiplier":{"$numberDouble":"1.2"},"benefits":["Tích điểm x1,2","Ưu đãi sinh nhật"]}
+{"_id":{"$oid":"6aebf9dcfc47767e593682d3"},"code":"GOLD","name":"Vàng","rank":{"$numberInt":"3"},"minSpend":{"$numberInt":"4000000"},"pointMultiplier":{"$numberDouble":"1.5"},"benefits":["Tích điểm x1,5","Ưu đãi sinh nhật","Mã giảm giá riêng"]}
+{"_id":{"$oid":"6aebf9dcfc47767e593682d4"},"code":"PLATINUM","name":"Bạch kim","rank":{"$numberInt":"4"},"minSpend":{"$numberInt":"5500000"},"pointMultiplier":{"$numberInt":"2"},"benefits":["Tích điểm x2","Ưu đãi sinh nhật","Mã giảm giá riêng","Lối vào ưu tiên"]}

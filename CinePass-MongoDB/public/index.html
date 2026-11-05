@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CinePass · Đặt vé xem phim</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/cinema.css">
+<script defer src="/movie-art.js"></script>
+<script defer src="/cinema.js"></script>
+</head>
+<body>
+<header class="header"><div class="wrap topbar">
+<a class="brand" href="#"><span class="brand-icon">◈</span>Cine<span>Pass</span></a>
+<nav><a class="active" href="#phim">Khám phá phim</a><button data-act="schedule">Lịch chiếu</button><button data-act="offers">Ưu đãi</button></nav>
+<button class="outline" data-act="account">Vé & tài khoản ↗</button>
+</div></header>
+<main class="wrap">
+<div class="mast"><span><i></i> RẠP CHIẾU &nbsp; / &nbsp; ĐẶT VÉ</span><span class="demo-tag" id="connection">ĐANG KẾT NỐI</span></div>
+<section class="hero database-hero" id="hero">
+<div class="hero-art" aria-hidden="true"></div>
+<div class="hero-content">
+<p class="eyebrow"><span></span> CINEPASS · SUẤT CHIẾU NỔI BẬT</p>
+<h1 id="hero-title">Chọn phim.<br>Hẹn ở rạp.</h1>
+<p class="hero-description" id="hero-copy">Khám phá danh mục phim và lịch chiếu của hệ thống Sen Vàng Cinema.</p>
+<div class="hero-actions"><button class="lime" data-act="schedule">Chọn suất chiếu ↗</button><button class="glass" data-act="offers">Xem ưu đãi</button></div>
+</div>
+<div class="hero-index" id="hero-index"></div>
+</section>
+<section id="phim" class="catalog" aria-labelledby="catalog-title">
+<div class="section-top"><div><p class="kicker"><span></span> DANH MỤC ĐIỆN ẢNH</p><h2 id="catalog-title">Khám phá phim</h2></div>
+<label class="search">⌕ <input id="search" type="search" placeholder="Tìm tên phim…" aria-label="Tìm tên phim"></label></div>
+<div class="filter-row"><div class="tabs" id="tabs">
+<button data-act="filter" data-id="now_showing" aria-pressed="true">Đang chiếu</button>
+<button data-act="filter" data-id="coming_soon" aria-pressed="false">Sắp chiếu</button>
+<button data-act="filter" data-id="ended" aria-pressed="false">Đã chiếu</button>
+</div><label class="genre"><span>Thể loại</span><select id="genre" aria-label="Lọc thể loại"><option value="">Tất cả</option></select></label></div>
+<p id="result-count" class="summary"></p><div class="movies" id="movies" aria-live="polite"></div>
+</section>
+</main>
+<footer><div class="wrap footer"><a class="brand" href="#">Cine<span>Pass</span></a><p>Ứng dụng minh họa · MongoDB & Mingo</p><button class="text-button" data-act="dashboard">Quản trị & báo cáo ↗</button></div><div class="wrap source-credit">Thông tin và ảnh phim từ <a href="https://phim.nguonc.com/api/films/danh-sach/phim-le" target="_blank" rel="noopener noreferrer">NguonC</a> · Lịch chiếu, giá vé và đánh giá dùng cho demo.</div></footer>
+<dialog id="modal" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
+</body>
+</html>
+

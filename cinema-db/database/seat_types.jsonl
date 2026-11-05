@@ -1,0 +1,3 @@
+{"_id":{"$oid":"6aebf9dcfc47767e59368417"},"code":"STANDARD","name":"Ghế thường","personsPerSeat":{"$numberInt":"1"}}
+{"_id":{"$oid":"6aebf9dcfc47767e59368418"},"code":"VIP","name":"Ghế VIP","personsPerSeat":{"$numberInt":"1"}}
+{"_id":{"$oid":"6aebf9dcfc47767e59368419"},"code":"COUPLE","name":"Ghế đôi","personsPerSeat":{"$numberInt":"2"}}

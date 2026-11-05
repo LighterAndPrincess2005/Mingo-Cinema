@@ -1,0 +1,309 @@
+@startuml
+class users {
+  ObjectId _id
+  String fullName
+  String email
+  String phone
+  String passwordHash
+  Date dateOfBirth
+  ObjectId tierId
+  int pointsBalance
+  int lifetimeSpend
+  String status
+  Date createdAt
+}
+class membership_tiers {
+  ObjectId _id
+  String code
+  String name
+  int rank
+  int minSpend
+  double pointMultiplier
+  Array benefits
+}
+class loyalty_transactions {
+  ObjectId _id
+  ObjectId userId
+  String type
+  int points
+  String refType
+  ObjectId refId
+  String description
+  Date createdAt
+}
+class genres {
+  ObjectId _id
+  String name
+  String slug
+}
+class people {
+  ObjectId _id
+  String fullName
+  String nationality
+  int birthYear
+  String bio
+}
+class movies {
+  ObjectId _id
+  String title
+  String slug
+  Array genreIds
+  int durationMin
+  String ageRating
+  Array formats
+  String language
+  Date releaseDate
+  String status
+  String synopsis
+  String posterUrl
+  Object ratingSummary
+}
+class movie_credit {
+  ObjectId personId
+  String name
+  String role
+  String character
+}
+class reviews {
+  ObjectId _id
+  ObjectId movieId
+  ObjectId userId
+  ObjectId ticketId
+  int rating
+  String comment
+  String status
+  Date createdAt
+}
+class cinemas {
+  ObjectId _id
+  String code
+  String name
+  String city
+  String address
+  Object location
+  String phone
+  String openTime
+  String closeTime
+  String status
+}
+class rooms {
+  ObjectId _id
+  ObjectId cinemaId
+  String name
+  String format
+  int capacity
+  String status
+}
+class room_seat_row {
+  String row
+  int seatCount
+  ObjectId seatTypeId
+}
+class seat_types {
+  ObjectId _id
+  String code
+  String name
+  int personsPerSeat
+}
+class staff {
+  ObjectId _id
+  ObjectId cinemaId
+  String fullName
+  String email
+  String position
+  Array permissions
+  String status
+  Date hiredAt
+}
+class showtimes {
+  ObjectId _id
+  ObjectId movieId
+  ObjectId cinemaId
+  ObjectId roomId
+  Date startTime
+  Date endTime
+  String format
+  String language
+  String status
+  Object snapshot
+}
+class showtime_seat {
+  String code
+  ObjectId seatTypeId
+  int price
+  String status
+  Date holdUntil
+  String holdToken
+  ObjectId bookingId
+}
+class price_rules {
+  ObjectId _id
+  String name
+  String format
+  ObjectId seatTypeId
+  String dayType
+  String timeFrom
+  String timeTo
+  ObjectId cinemaId
+  int price
+  int priority
+  Date validFrom
+  Date validTo
+  String status
+}
+class bookings {
+  ObjectId _id
+  String bookingCode
+  ObjectId userId
+  ObjectId showtimeId
+  Array seatCodes
+  String holdToken
+  int ticketAmount
+  int concessionAmount
+  int subtotal
+  int discountAmount
+  int pointsUsed
+  int pointsDiscount
+  int totalAmount
+  ObjectId promotionId
+  String promotionCode
+  String status
+  Date expiresAt
+  Date paidAt
+  Date createdAt
+  Object snapshot
+}
+class booking_concession {
+  ObjectId itemId
+  String name
+  int unitPrice
+  int quantity
+  int lineTotal
+}
+class tickets {
+  ObjectId _id
+  ObjectId bookingId
+  ObjectId showtimeId
+  ObjectId movieId
+  ObjectId userId
+  String seatCode
+  ObjectId seatTypeId
+  int price
+  String qrCode
+  String status
+  Date checkedInAt
+  ObjectId checkedInBy
+  ObjectId refundId
+  Date createdAt
+}
+class payments {
+  ObjectId _id
+  ObjectId bookingId
+  ObjectId userId
+  int amount
+  String method
+  String status
+  String transactionRef
+  String idempotencyKey
+  Date paidAt
+  Date createdAt
+}
+class refunds {
+  ObjectId _id
+  ObjectId paymentId
+  ObjectId bookingId
+  ObjectId userId
+  Array ticketIds
+  int amount
+  String reason
+  String status
+  ObjectId approvedBy
+  Date createdAt
+}
+class concession_items {
+  ObjectId _id
+  String name
+  String type
+  int price
+  String status
+}
+class combo_component {
+  ObjectId itemId
+  int quantity
+}
+class promotions {
+  ObjectId _id
+  String code
+  String name
+  String discountType
+  int discountValue
+  int maxDiscount
+  int minOrder
+  int maxUses
+  int usedCount
+  int perUserLimit
+  Date startAt
+  Date endAt
+  String status
+  Object conditions
+}
+class promotion_redemptions {
+  ObjectId _id
+  ObjectId promotionId
+  ObjectId userId
+  ObjectId bookingId
+  int useNo
+  int discountAmount
+  String status
+  Date createdAt
+}
+
+movies "1" *-- "1..*" movie_credit
+rooms "1" *-- "1..*" room_seat_row
+showtimes "1" *-- "1..*" showtime_seat
+bookings "1" *-- "0..*" booking_concession
+concession_items "1" *-- "0..*" combo_component
+
+membership_tiers "1" -- "0..*" users
+users "1" -- "0..*" loyalty_transactions
+users "1" -- "0..*" bookings
+users "1" -- "0..*" reviews
+users "1" -- "0..*" tickets
+users "1" -- "0..*" payments
+users "1" -- "0..*" refunds
+users "1" -- "0..*" promotion_redemptions
+
+genres "1..*" -- "0..*" movies
+people "1" -- "0..*" movie_credit
+movies "1" -- "0..*" reviews
+movies "1" -- "0..*" showtimes
+movies "1" -- "0..*" tickets
+
+cinemas "1" -- "0..*" rooms
+cinemas "1" -- "0..*" staff
+cinemas "1" -- "0..*" showtimes
+cinemas "0..1" -- "0..*" price_rules
+rooms "1" -- "0..*" showtimes
+seat_types "1" -- "0..*" room_seat_row
+seat_types "1" -- "0..*" showtime_seat
+seat_types "1" -- "0..*" price_rules
+seat_types "1" -- "0..*" tickets
+
+showtimes "1" -- "0..*" bookings
+showtimes "1" -- "0..*" tickets
+bookings "0..1" -- "0..*" showtime_seat
+bookings "1" -- "0..*" tickets
+bookings "1" -- "0..*" payments
+bookings "1" -- "0..*" refunds
+bookings "1" -- "0..*" promotion_redemptions
+payments "1" -- "0..*" refunds
+refunds "0..1" -- "0..*" tickets
+tickets "1" -- "0..1" reviews
+staff "0..1" -- "0..*" tickets
+staff "1" -- "0..*" refunds
+
+concession_items "1" -- "0..*" booking_concession
+concession_items "1" -- "0..*" combo_component
+promotions "1" -- "0..*" promotion_redemptions
+promotions "0..1" -- "0..*" bookings
+@enduml
