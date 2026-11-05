@@ -35,18 +35,22 @@
 <button class="primary" disabled>Xem suất chiếu ↗</button>
 </form>
 <section id="phim" class="catalog" aria-labelledby="catalog-title">
-<div class="section-top"><div><p class="kicker"><span></span> DANH MỤC ĐIỆN ẢNH</p><h2 id="catalog-title">Khám phá phim</h2></div>
-<label class="search">⌕ <input id="search" type="search" placeholder="Tìm tên phim…" aria-label="Tìm tên phim"></label></div>
+<div class="catalog-heading">
+<div><p class="kicker"><span></span> DANH MỤC ĐIỆN ẢNH</p><h2 id="catalog-title">Khám phá phim</h2></div>
+<p id="result-count" class="summary" role="status"></p>
+</div>
 <div class="filter-row"><div class="tabs" id="tabs">
 <button data-act="filter" data-id="now_showing" aria-pressed="true">Đang chiếu</button>
 <button data-act="filter" data-id="coming_soon" aria-pressed="false">Sắp chiếu</button>
 <button data-act="filter" data-id="ended" aria-pressed="false">Đã chiếu</button>
-</div><label class="genre"><span>Thể loại</span><select id="genre" aria-label="Lọc thể loại"><option value="">Tất cả</option></select></label></div>
-<p id="result-count" class="summary"></p><div class="movies" id="movies" aria-live="polite"></div>
+</div>
+<label class="search">⌕ <input id="search" type="search" placeholder="Tìm tên phim…" aria-label="Tìm tên phim"></label>
+<label class="genre"><span>Thể loại</span><select id="genre" aria-label="Lọc thể loại"><option value="">Tất cả</option></select></label>
+</div>
+<div class="movies" id="movies" aria-live="polite"></div>
 </section>
 </main>
 <footer><div class="wrap footer"><a class="brand" href="#">Cine<span>Pass</span></a><p>Ứng dụng minh họa · MongoDB & Mingo</p><button class="text-button" data-act="dashboard">Quản trị & báo cáo ↗</button></div><div class="wrap source-credit">Thông tin và ảnh phim từ <a href="https://phim.nguonc.com/api/films/danh-sach/phim-le" target="_blank" rel="noopener noreferrer">NguonC</a> · Lịch chiếu, giá vé và đánh giá dùng cho demo.</div></footer>
 <dialog id="modal" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
 </body>
 </html>
-
