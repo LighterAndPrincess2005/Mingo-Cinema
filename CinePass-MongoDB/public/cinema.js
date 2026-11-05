@@ -227,6 +227,63 @@ function ticketList(tickets, review = false) {
     ${review && ticket.status === 'used' ? button('Đánh giá phim', 'review', ticket._id, 'linklike') : ''}</p>`).join('');
 }
 
+const receiptCss = `
+  .receipt {font: 15px/1.5 system-ui,sans-serif; color:#17152e; background:#fff; border:1px solid #ddd7f2; border-radius:16px; overflow:hidden}
+  .receipt-head {padding:20px; background:#24134d; color:white}
+  .receipt-head strong {font-size:12px; letter-spacing:.16em}
+  .receipt-head h3 {margin:8px 0 4px; font-size:24px; overflow-wrap:anywhere}
+  .receipt-status {display:inline-block; padding:4px 9px; border-radius:20px; background:#d7fae4; color:#075735; font-weight:700}
+  .receipt-grid {display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:14px; margin:0; padding:20px}
+  .receipt dt {color:#59556f; font-size:13px}
+  .receipt dd {margin:2px 0 0; font-weight:700; overflow-wrap:anywhere}
+  .receipt-bottom {padding:16px 20px; border-top:2px dashed #ddd7f2; background:#f7f5ff}
+  .receipt-bottom ul {padding-left:20px; margin:6px 0}
+  .receipt-bottom code {overflow-wrap:anywhere}
+  .receipt-bottom small {display:block; color:#59556f}
+`;
+const receiptStyle = document.createElement('style');
+receiptStyle.textContent = receiptCss;
+document.head.append(receiptStyle);
+const receiptStatuses = { paid: 'Đã thanh toán', partially_refunded: 'Đã hoàn một phần', refunded: 'Đã hoàn tiền' };
+let currentReceipt;
+
+function showReceipt(booking, tickets, fullName) {
+  const snapshot = booking.snapshot;
+  const cinema = state.catalog.cinemas.find(item => item.name === snapshot.cinemaName);
+  const fields = [
+    ['Mã đặt vé', booking.bookingCode], ['Họ và tên', fullName],
+    ['Rạp', snapshot.cinemaName], ['Địa điểm', cinema?.address || snapshot.cinemaName],
+    ['Suất chiếu', time(snapshot.startTime) + ' · ' + date(snapshot.startTime)],
+    ['Phòng chiếu', snapshot.roomName], ['Số ghế', booking.seatCodes.join(', ')],
+    ['Tổng tiền thanh toán', money(booking.totalAmount)],
+  ];
+  const markup = `<article class="receipt">
+    <div class="receipt-head"><strong>CINEPASS · VÉ ĐIỆN TỬ</strong>
+    <h3>${e(snapshot.movieTitle)}</h3><span class="receipt-status">${e(receiptStatuses[booking.status])}</span></div>
+    <dl class="receipt-grid">${fields.map(([key, value]) => `<div><dt>${key}</dt><dd>${e(value)}</dd></div>`).join('')}</dl>
+    <div class="receipt-bottom"><strong>Mã vé theo ghế</strong>
+    <ul>${tickets.map(ticket => `<li>Ghế <b>${e(ticket.seatCode)}</b> · <code>${e(ticket.qrCode)}</code> · ${e(label(ticket.status))}</li>`).join('')}</ul>
+    <small>Vé demo · Thanh toán mô phỏng</small></div></article>`;
+  currentReceipt = { markup, code: booking.bookingCode };
+  panel('Vé điện tử', markup + `<div class="checkout">${button('Lưu vé về máy ↓', 'save-receipt', '', 'primary')}
+    ${button('Vé của tôi ↗', 'account')}</div>`);
+}
+
+function saveReceipt() {
+  if (!currentReceipt) return;
+  const { markup, code } = currentReceipt;
+  const page = `<!doctype html><html lang="vi"><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"><title>Vé CinePass ${e(code)}</title>
+    <style>${receiptCss} body{max-width:620px;margin:24px auto;padding:0 12px;background:#f5f2fb}</style>
+    <body>${markup}</body></html>`;
+  const url = URL.createObjectURL(new Blob([page], { type: 'text/html;charset=utf-8' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'CinePass-' + code.replace(/[^a-z0-9-]/gi, '') + '.html';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function account(data) {
   state.account = data;
   const { profile, tier, bookings, tickets, payments, refunds, points } = data;
@@ -240,6 +297,7 @@ function account(data) {
       <p>${e(booking.bookingCode)} · ${e(booking.snapshot.cinemaName)} · ${date(booking.snapshot.startTime)} ${time(booking.snapshot.startTime)}</p>
       <p>Ghế ${e(booking.seatCodes.join(', '))} · <strong>${money(booking.totalAmount)}</strong></p>
       ${booking.status === 'pending' ? `<div class="card-row">${button('Thanh toán', 'resume', booking._id)} ${button('Hủy giữ ghế', 'cancel-review', booking._id, 'danger')}</div>` : ''}
+      ${Object.hasOwn(receiptStatuses, booking.status) ? button('Mở vé điện tử', 'receipt', booking._id) : ''}
       <details><summary>Vé, thanh toán và hoàn tiền</summary>
         ${ticketList(tickets.filter(ticket => ticket.bookingId === booking._id), true)}
         ${payments.filter(item => item.bookingId === booking._id).map(item => `<p>Thanh toán · ${e(label(item.method))} · ${e(label(item.status))} · ${money(item.amount)}</p>`).join('')}
@@ -352,6 +410,12 @@ document.addEventListener('click', event => {
     case 'account': openAccount(); break;
     case 'login': authPanel(false, id); break;
     case 'register': authPanel(true, id); break;
+    case 'receipt': {
+      const booking = state.account.bookings.find(item => item._id === id);
+      showReceipt(booking, state.account.tickets.filter(ticket => ticket.bookingId === id), state.account.profile.fullName);
+      break;
+    }
+    case 'save-receipt': saveReceipt(); break;
     case 'resume':
       payment(state.account.bookings.find(booking => booking._id === id));
       break;
@@ -412,9 +476,7 @@ content.addEventListener('submit', async event => {
       if (form.dataset.destination === 'checkout') openCheckout();
       else openAccount();
     } else if (action === 'book') payment(data);
-    else if (action === 'pay') panel('Đặt vé thành công', `<article class="record"><h3>${e(data.booking.bookingCode)} · ${e(data.booking.snapshot.movieTitle)}</h3>
-      <p>Đã thanh toán mô phỏng ${money(data.booking.totalAmount)}.</p>${ticketList(data.tickets)}</article>
-      <div class="checkout">${button('Xem vé của tôi ↗', 'account', '', 'primary')}</div>`);
+    else if (action === 'pay') showReceipt(data.booking, data.tickets, state.identity.fullName);
     else if (action === 'cancel' || action === 'review') openAccount();
     else panel(action === 'refund' ? 'Đã hoàn vé' : 'Đã soát vé',
       `<p class="status-line" role="status">MongoDB đã ghi nhận thao tác.</p>${button('Về báo cáo', 'dashboard')}`);
@@ -429,7 +491,10 @@ content.addEventListener('submit', async event => {
 dialog.addEventListener('close', () => {
   request++;
   clearInterval(timer);
-  if (!dialog.open) content.replaceChildren();
+  if (!dialog.open) {
+    currentReceipt = null;
+    content.replaceChildren();
+  }
 });
 $('#search').addEventListener('input', () => { if (state.catalog) renderMovies(); });
 $('#genre').addEventListener('change', () => { if (state.catalog) renderMovies(); });
