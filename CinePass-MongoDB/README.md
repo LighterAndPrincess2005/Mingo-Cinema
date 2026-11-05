@@ -33,7 +33,7 @@ Có thể chạy lại trên cùng database. Dữ liệu không gán lại bằn
 ## Trình diễn
 
 1. Tìm phim theo tên tiếng Việt hoặc tên gốc, lọc thể loại và trạng thái.
-2. Mở chi tiết, chọn ngày, rạp, suất và ghế.
+2. Mở chi tiết, chọn ngày, rạp, suất và ghế. Đăng ký tài khoản mới hoặc đăng nhập trước khi giữ ghế.
 3. Thêm bắp nước, ưu đãi hoặc đổi điểm, xác nhận giữ ghế rồi thanh toán mô phỏng.
 4. Mở **Vé & tài khoản** để xem vé, thanh toán, hoàn tiền và lịch sử điểm.
 5. Mở **Quản trị & báo cáo** ở chân trang để xem số liệu, giá, soát vé và duyệt hoàn vé.
@@ -47,4 +47,4 @@ Lịch chiếu, trạng thái đang/sắp chiếu, định dạng, phân loại 
 
 Sau khi nhập metadata, `mongosh --quiet --file tests/verify-media-db.js` đối chiếu tên, ảnh, thời lượng suất chiếu và các đơn mẫu với dữ liệu nguồn.
 
-Ứng dụng chạy nội bộ, dùng hồ sơ khách và nhân viên mẫu, thanh toán mô phỏng.
+Tài khoản mới bắt đầu ở hạng Thành viên và có 0 điểm. Tài khoản khách mẫu trong bản xuất chỉ dùng để minh họa dữ liệu giao dịch. Phiên đăng nhập có hiệu lực tối đa 8 giờ và kết thúc khi khởi động lại máy chủ. Quản trị dùng vai trò nhân viên mẫu và thanh toán là mô phỏng.

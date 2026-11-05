@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import path from 'node:path';
+import { createAuth } from './auth.mjs';
 
 const run = promisify(execFile);
 const root = fileURLToPath(new URL('.', import.meta.url));
@@ -12,6 +13,9 @@ const origin = 'http://127.0.0.1:' + port;
 const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript' };
 const reads = new Set(['catalog', 'movie', 'schedule', 'seats', 'account', 'dashboard', 'staff']);
 const writes = new Set(['book', 'pay', 'cancel', 'review', 'checkin', 'refund', 'expire']);
+const customerActions = new Set(['account', 'book', 'pay', 'cancel', 'review']);
+const authActions = new Set(['register', 'login', 'logout']);
+const auth = createAuth(execute, write);
 let queue = Promise.resolve();
 
 async function execute(action, input) {
@@ -50,13 +54,24 @@ createServer(async (req, res) => {
     const url = new URL(req.url, origin);
     if (url.pathname.startsWith('/api/')) {
       const action = url.pathname.slice(5);
-      if (req.method === 'POST' && req.headers.origin === origin &&
-          req.headers['content-type'] === 'application/json' && writes.has(action) && action !== 'expire') {
-        const result = await write(action, await body(req));
+      const session = auth.current(req);
+      if (req.method === 'GET' && action === 'me') {
+        return send(200, { data: session ? { fullName: session.fullName } : null });
+      }
+      const validWrite = req.method === 'POST' && req.headers.origin === origin &&
+        req.headers['content-type'] === 'application/json';
+      if (validWrite && authActions.has(action)) {
+        return await auth.submit(action, await body(req), req, res, send);
+      }
+      if (customerActions.has(action) && !session) {
+        return send(401, { error: 'Vui lòng đăng nhập để tiếp tục.' });
+      }
+      if (validWrite && writes.has(action) && action !== 'expire') {
+        const result = await write(action, { ...await body(req), user: session?.userId });
         return send(result.error ? 409 : 200, result);
       }
       if (req.method === 'GET' && reads.has(action)) {
-        const result = await execute(action, Object.fromEntries(url.searchParams));
+        const result = await execute(action, { ...Object.fromEntries(url.searchParams), user: session?.userId });
         return send(result.error ? 400 : 200, result);
       }
       return send(404, { error: 'Không có thao tác này.' });

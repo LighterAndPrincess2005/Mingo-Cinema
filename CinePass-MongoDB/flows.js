@@ -2,7 +2,7 @@
 // MongoDB standalone không có multi-document transaction, nên mỗi bước đều idempotent:
 // chạy lại không sinh dữ liệu trùng, và mỗi thay đổi tranh chấp là một lệnh update nguyên tử có điều kiện.
 (function () {
-  const d = db.getSiblingDB('QLDatVeXemPhim');
+  const d = db.getSiblingDB(process.env.CINEPASS_DB || 'QLDatVeXemPhim');
 
   const config = {
     HOLD_MINUTES: 10,

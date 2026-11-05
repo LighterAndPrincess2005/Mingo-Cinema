@@ -17,7 +17,7 @@ const status = {
   card: 'Thẻ', momo: 'MoMo', vnpay: 'VNPay', bank_transfer: 'Chuyển khoản',
 };
 const palettes = [['#8255ff','#2d185b'],['#ef743a','#5a282b'],['#1ba68c','#134d56'],['#df5189','#61234b'],['#406ce5','#213962'],['#c5a345','#534428']];
-const state = { catalog: null, filter: 'now_showing', user: '', schedule: [], movie: '', day: '', cinema: '', seats: new Set(), show: null };
+const state = { catalog: null, filter: 'now_showing', identity: null, schedule: [], movie: '', day: '', cinema: '', seats: new Set(), show: null };
 let request = 0;
 let timer;
 const button = (text, action, id = '', type = 'soft', attrs = '') =>
@@ -40,6 +40,7 @@ async function api(action, input = {}, write = false) {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input),
   } : {});
   const result = JSON.parse(await response.text(), revive);
+  if (response.status === 401 && action !== 'login') setIdentity(null);
   if (!response.ok || result.error) throw Error(result.error || 'Không tải được dữ liệu.');
   return result.data;
 }
@@ -69,9 +70,28 @@ async function load(title, get, draw) {
   }
 }
 
-function profileSelect() {
-  return `<label class="inline">Hồ sơ khách demo <select id="profile">${state.catalog.users.map((user, index) =>
-    `<option value="${e(user._id)}" ${user._id === state.user ? 'selected' : ''}>Khách demo ${index + 1}</option>`).join('')}</select></label>`;
+function setIdentity(identity) {
+  state.identity = identity;
+  $('#account-button').textContent = identity ? 'Vé & tài khoản ↗' : 'Đăng nhập ↗';
+  if (!identity) state.account = null;
+}
+
+function authPanel(register = false, destination = 'account') {
+  const title = register ? 'Tạo tài khoản' : 'Đăng nhập';
+  panel(title, `<p class="muted">${destination === 'checkout' ?
+    'Đăng nhập để giữ ghế và xem vé của bạn.' : 'Đăng nhập để xem vé, hạng thành viên và điểm của bạn.'}</p>
+    <form data-form="${register ? 'register' : 'login'}" data-destination="${e(destination)}">
+      <div class="form-fields">
+        ${register ? '<label>Họ và tên <input name="fullName" autocomplete="name" maxlength="100" required></label>' : ''}
+        <label>Email <input name="email" type="email" autocomplete="email" maxlength="160" required></label>
+        ${register ? '<label>Số điện thoại <input name="phone" type="tel" autocomplete="tel" pattern="0[0-9]{9}" required></label>' : ''}
+        <label>Mật khẩu <input name="password" type="password" autocomplete="${register ? 'new-password' : 'current-password'}" minlength="${register ? 8 : 1}" maxlength="128" required></label>
+      </div>
+      <div class="checkout">
+        ${button(register ? 'Đã có tài khoản' : 'Tạo tài khoản mới', register ? 'login' : 'register', destination)}
+        <button class="primary">${title}</button>
+      </div>
+    </form>`, 'TÀI KHOẢN CINEPASS');
 }
 
 const normalize = value => value.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/đ/g, 'd');
@@ -169,7 +189,7 @@ function seatTotal() {
 }
 
 function checkout({ profile, tier }) {
-  panel('Hoàn tất đơn', `<form data-form="book">${profileSelect()}
+  panel('Hoàn tất đơn', `<form data-form="book"><p class="muted">Đặt vé cho ${e(profile.fullName)}</p>
     <article class="record"><h3>${e(state.show.snapshot.movieTitle)}</h3><p>${showSummary(state.show)}</p>
     <p>Ghế ${e([...state.seats].join(', '))} · ${money(seatAmount())}</p></article>
     <details class="fold"><summary>Thêm bắp nước</summary>${state.catalog.concessions.map(item =>
@@ -210,7 +230,8 @@ function ticketList(tickets, review = false) {
 function account(data) {
   state.account = data;
   const { profile, tier, bookings, tickets, payments, refunds, points } = data;
-  panel('Vé & tài khoản', `${profileSelect()}<div class="stats"><div><strong>${e(tier?.name || 'Thành viên')}</strong>Hạng</div>
+  panel('Vé & tài khoản', `<div class="checkout"><strong>${e(profile.fullName)}</strong>
+    <form data-form="logout"><button class="soft">Đăng xuất</button></form></div><div class="stats"><div><strong>${e(tier?.name || 'Thành viên')}</strong>Hạng</div>
     <div><strong>${number(profile.pointsBalance)}</strong>Điểm hiện có</div><div><strong>${money(profile.lifetimeSpend)}</strong>Chi tiêu tích lũy</div></div>
     <details class="fold"><summary>Quyền lợi & lịch sử điểm</summary><p>${e(Array.isArray(tier?.benefits) ? tier.benefits.join(' · ') : '')}</p>
     ${points.map(point => `<p>${date(point.createdAt)} · ${e(point.description)} · <strong>${point.points > 0 ? '+' : ''}${point.points}</strong></p>`).join('')}</details>
@@ -275,7 +296,13 @@ function staffPanel(staff, action) {
 }
 
 function openAccount() {
-  load('Vé & tài khoản', () => api('account', { user: state.user }), account);
+  if (!state.identity) return authPanel();
+  load('Vé & tài khoản', () => api('account'), account);
+}
+
+function openCheckout() {
+  if (!state.identity) return authPanel(false, 'checkout');
+  load('Hoàn tất đơn', () => api('account'), checkout);
 }
 
 document.addEventListener('click', event => {
@@ -321,10 +348,10 @@ document.addEventListener('click', event => {
       control.setAttribute('aria-pressed', state.seats.has(id));
       seatTotal();
       break;
-    case 'checkout':
-      load('Hoàn tất đơn', () => api('account', { user: state.user }), checkout);
-      break;
+    case 'checkout': openCheckout(); break;
     case 'account': openAccount(); break;
+    case 'login': authPanel(false, id); break;
+    case 'register': authPanel(true, id); break;
     case 'resume':
       payment(state.account.bookings.find(booking => booking._id === id));
       break;
@@ -353,20 +380,7 @@ content.addEventListener('change', event => {
     state.cinema = event.target.value;
     drawSchedule();
   }
-  if (event.target.id === 'profile') {
-    state.user = event.target.value;
-    sessionStorage.setItem('cinepass.demo.user', state.user);
-    if (event.target.closest('[data-form="book"]')) {
-      const form = event.target.form;
-      const user = state.user;
-      api('account', { user }).then(({ profile, tier }) => {
-        if (!form.isConnected || state.user !== user) return;
-        form.elements.points.max = Math.max(profile.pointsBalance, 0);
-        form.elements.points.value = 0;
-        form.elements.points.previousSibling.textContent = `Điểm sử dụng · ${tier?.name || ''} · Có ${number(profile.pointsBalance)} điểm `;
-      }).catch(err => { if (form.isConnected) error(err.message); });
-    } else openAccount();
-  }
+
 });
 
 content.addEventListener('submit', async event => {
@@ -379,7 +393,9 @@ content.addEventListener('submit', async event => {
   const submitter = event.submitter;
   if (submitter) submitter.disabled = true;
   const fields = new FormData(form);
-  let input = { user: state.user, booking: form.dataset.id };
+  let input = { booking: form.dataset.id };
+  if (action === 'login' || action === 'register') input = Object.fromEntries(fields);
+  if (action === 'logout') input = {};
   if (action === 'book') input = { ...input, show: state.show._id, seats: [...state.seats],
     promo: fields.get('promo'), points: Number(fields.get('points')),
     food: [...form.querySelectorAll('[data-item]')].filter(item => Number(item.value) > 0)
@@ -389,8 +405,13 @@ content.addEventListener('submit', async event => {
   if (action === 'checkin' || action === 'refund') input = { staff: fields.get('staff'), code: fields.get('code'), reason: fields.get('reason') };
   try {
     const data = await api(action, input, true);
+    if (action === 'login' || action === 'register' || action === 'logout') setIdentity(data);
     if (!form.isConnected || !dialog.open) return;
-    if (action === 'book') payment(data);
+    if (action === 'logout') dialog.close();
+    else if (action === 'login' || action === 'register') {
+      if (form.dataset.destination === 'checkout') openCheckout();
+      else openAccount();
+    } else if (action === 'book') payment(data);
     else if (action === 'pay') panel('Đặt vé thành công', `<article class="record"><h3>${e(data.booking.bookingCode)} · ${e(data.booking.snapshot.movieTitle)}</h3>
       <p>Đã thanh toán mô phỏng ${money(data.booking.totalAmount)}.</p>${ticketList(data.tickets)}</article>
       <div class="checkout">${button('Xem vé của tôi ↗', 'account', '', 'primary')}</div>`);
@@ -405,14 +426,17 @@ content.addEventListener('submit', async event => {
   }
 });
 
-dialog.addEventListener('close', () => { request++; clearInterval(timer); });
+dialog.addEventListener('close', () => {
+  request++;
+  clearInterval(timer);
+  if (!dialog.open) content.replaceChildren();
+});
 $('#search').addEventListener('input', () => { if (state.catalog) renderMovies(); });
 $('#genre').addEventListener('change', () => { if (state.catalog) renderMovies(); });
-api('catalog').then(data => {
+Promise.all([api('catalog'), api('me')]).then(([data, identity]) => {
   if (!data.movies.length) throw Error('Chưa có phim trong QLDatVeXemPhim.');
   state.catalog = data;
-  const saved = sessionStorage.getItem('cinepass.demo.user');
-  state.user = data.users.find(user => user._id === saved)?._id || data.users[0]?._id || '';
+  setIdentity(identity);
   $('#connection').textContent = '● MONGODB KẾT NỐI';
   $('#hero-index').textContent = `${data.movies.length} PHIM · ${data.cinemas.length} RẠP`;
   const featured = data.movies.find(movie => movie.status === 'now_showing' && movie.title.length <= 35) ||
@@ -430,4 +454,3 @@ api('catalog').then(data => {
   $('#connection').textContent = 'LỖI KẾT NỐI';
   $('#movies').innerHTML = empty(err.message);
 });
-

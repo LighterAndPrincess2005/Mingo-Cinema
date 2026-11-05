@@ -1,5 +1,5 @@
 load('flows.js');
-const cinemaDb = db.getSiblingDB('QLDatVeXemPhim');
+const cinemaDb = db.getSiblingDB(process.env.CINEPASS_DB || 'QLDatVeXemPhim');
 const { action, input = {} } = JSON.parse(process.env.CINEPASS_REQUEST);
 const rows = (collection, filter = {}, projection = {}, sort = {}, limit = 0) =>
   cinemaDb[collection].find(filter, projection).sort(sort).limit(limit).toArray();
@@ -11,10 +11,9 @@ const int = (value, min, max) => {
   if (!Number.isInteger(value) || value < min || value > max) throw Error('Số lượng không hợp lệ.');
   return value;
 };
-const publicUsers = () => rows('users', { status: 'active' }, { _id: 1 }, { _id: 1 }, 5);
 const user = () => {
   const selected = id(input.user);
-  if (!publicUsers().some(item => item._id.equals(selected))) throw Error('Chọn một hồ sơ khách demo.');
+  if (!cinemaDb.users.findOne({ _id: selected, status: 'active' }, { _id: 1 })) throw Error('Tài khoản không khả dụng.');
   return selected;
 };
 const ownedBooking = () => {
@@ -33,6 +32,25 @@ const publicBooking = booking => {
 };
 const ticketFields = { qrCode: 1, seatCode: 1, status: 1, price: 1, movieId: 1, bookingId: 1 };
 const handlers = {
+  findLogin() {
+    return cinemaDb.users.findOne({ email: input.email, status: 'active' },
+      { fullName: 1, passwordHash: 1 });
+  },
+  createUser() {
+    const tier = cinemaDb.membership_tiers.findOne({ code: 'MEMBER' }, { _id: 1 });
+    if (!tier) throw Error('Chưa có hạng thành viên mặc định.');
+    try {
+      const { insertedId } = cinemaDb.users.insertOne({
+        fullName: input.fullName, email: input.email, phone: input.phone,
+        passwordHash: input.passwordHash, tierId: tier._id, pointsBalance: 0,
+        lifetimeSpend: 0, status: 'active', createdAt: new Date(),
+      });
+      return { _id: insertedId, fullName: input.fullName };
+    } catch (err) {
+      if (err.code === 11000) throw Error('Email hoặc số điện thoại đã được đăng ký.');
+      throw err;
+    }
+  },
   catalog() {
     return {
       movies: rows('movies', {}, { credits: 0 }, { releaseDate: -1, title: 1 }),
@@ -40,7 +58,6 @@ const handlers = {
       cinemas: rows('cinemas', { status: 'active' }, { phone: 0, location: 0 }, { city: 1, name: 1 }),
       concessions: rows('concession_items', { status: 'active' }, {}, { type: 1, name: 1 }),
       promotions: rows('promotions', { status: 'active', startAt: { $lte: new Date() }, endAt: { $gte: new Date() } }),
-      users: publicUsers(),
     };
   },
   movie() {
@@ -68,7 +85,7 @@ const handlers = {
   },
   account() {
     const _id = user();
-    const profile = cinemaDb.users.findOne({ _id }, { pointsBalance: 1, lifetimeSpend: 1, tierId: 1 });
+    const profile = cinemaDb.users.findOne({ _id }, { fullName: 1, pointsBalance: 1, lifetimeSpend: 1, tierId: 1 });
     const bookings = rows('bookings', { userId: _id }, { holdToken: 0, userId: 0 }, { createdAt: -1 }, 40);
     const bookingId = { $in: bookings.map(booking => booking._id) };
     return { profile, tier: cinemaDb.membership_tiers.findOne({ _id: profile.tierId }),
