@@ -141,20 +141,28 @@ function openSchedule(movie = '', cinema = '', selectedDay = '') {
 }
 
 function detail({ movie, people, reviews }) {
-  panel(movie.title, `<div class="detail-art" aria-hidden="true">${movieArt(movie, true)}</div><div class="card-row">${genreNames(movie).map(tag).join('')}</div>
-    <p class="original-title">${e(movie.media?.originalTitle || '')}</p>
-    <p>${movie.durationMin} phút · ${e(movie.language)} · Phát hành ${e(movie.media?.year || new Date(movie.releaseDate).getFullYear())}</p>
-    <p class="muted">Suất chiếu mô phỏng · ${e(movie.formats.join(' / '))} · Phân loại demo ${e(movie.ageRating)}</p>
-    <p>${e(movie.synopsis)}</p>
-    <div class="card-row">${movie.status === 'now_showing' ? button('Chọn suất ↗', 'schedule', movie._id, 'primary') : ''}
-    ${trailerButton(movie)}</div>
+  const trailer = trailerButton(movie) || '<button class="soft" disabled>Chưa có trailer</button>';
+  panel(movie.title, `<section class="film-cover">
+    <div class="film-backdrop" aria-hidden="true">${movieArt(movie, true)}</div>
+    <div class="film-poster" aria-hidden="true">${movieArt(movie)}</div>
+    <div class="film-info">
+      <p class="film-original">${e(movie.media?.originalTitle || movie.title)}</p>
+      <div class="card-row">${[movie.durationMin + ' phút', movie.language, movie.media?.year || new Date(movie.releaseDate).getFullYear()].map(tag).join('')}</div>
+      <div class="card-row film-genres">${genreNames(movie).map(tag).join('')}</div>
+      <div class="card-row film-actions">${movie.status === 'now_showing' ? button('Chọn suất ↗', 'schedule', movie._id, 'primary') : ''}
+      ${trailer}</div>
+    </div>
+    </section>
+    <section class="film-synopsis"><h3>Nội dung phim</h3><p>${e(movie.synopsis)}</p>
+    <small>Suất chiếu mô phỏng · ${e(movie.formats.join(' / '))} · Phân loại demo ${e(movie.ageRating)}</small></section>
     <details class="fold"><summary>Đạo diễn & diễn viên</summary>${movie.credits.map(credit => {
       const person = people.find(person => person._id === credit.personId);
       return `<p><strong>${e(credit.name)}</strong> · ${e(({ actor: 'Diễn viên', writer: 'Biên kịch', director: 'Đạo diễn' })[credit.role] || credit.role)}
       ${credit.character ? ' · ' + e(credit.character) : ''} ${person?.nationality && person.nationality !== 'Chưa cập nhật' ? ' · ' + e(person.nationality) : ''}</p>`;
-    }).join('')}</details><h3>★ ${number(movie.ratingSummary.avg)}/10 · ${movie.ratingSummary.count} đánh giá demo</h3>
+    }).join('')}</details>
+    <details class="fold"><summary>Đánh giá demo · ★ ${number(movie.ratingSummary.avg)}/10 (${movie.ratingSummary.count})</summary>
     <div class="data-list">${reviews.map(review => `<article class="record"><strong>${review.rating}/10</strong>
-    <p>${e(review.comment || 'Đã chấm điểm phim.')} · ${date(review.createdAt)}</p></article>`).join('') || empty('Chưa có đánh giá.')}</div>`, 'THÔNG TIN PHIM');
+    <p>${e(review.comment || 'Đã chấm điểm phim.')} · ${date(review.createdAt)}</p></article>`).join('') || empty('Chưa có đánh giá.')}</div></details>`, 'THÔNG TIN PHIM', true);
 }
 
 function drawSchedule() {
