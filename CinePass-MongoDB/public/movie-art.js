@@ -21,7 +21,7 @@ function movieArt(movie, wide = false, hero = false) {
     '<img alt="" data-movie-image width="' + width + '" height="' + height +
     '" src="' + escape(url.href) + '"' +
     (hero ? ' fetchpriority="high"' : ' loading="lazy"') + '>' +
-    '<span class="image-credit">NguonC</span></span>';
+    '</span>';
 }
 
 document.addEventListener('load', event => {
