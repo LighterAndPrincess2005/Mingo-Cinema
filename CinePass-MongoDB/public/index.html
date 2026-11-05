@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="/styles.css">
 <link rel="stylesheet" href="/cinema.css">
 <script defer src="/movie-art.js"></script>
+<script defer src="/trailers.js"></script>
 <script defer src="/cinema.js"></script>
 </head>
 <body>
@@ -23,10 +24,16 @@
 <p class="eyebrow"><span></span> CINEPASS · SUẤT CHIẾU NỔI BẬT</p>
 <h1 id="hero-title">Chọn phim.<br>Hẹn ở rạp.</h1>
 <p class="hero-description" id="hero-copy">Khám phá danh mục phim và lịch chiếu của hệ thống Sen Vàng Cinema.</p>
-<div class="hero-actions"><button class="lime" data-act="schedule">Chọn suất chiếu ↗</button><button class="glass" data-act="offers">Xem ưu đãi</button></div>
+<div class="hero-actions"><button class="lime" data-act="schedule">Chọn suất chiếu ↗</button><button class="glass" id="hero-trailer" data-act="trailer" hidden>▶ Xem trailer</button></div>
 </div>
 <div class="hero-index" id="hero-index"></div>
 </section>
+<form class="quick-book" id="quick-book" aria-label="Đặt vé nhanh">
+<div class="quick-heading"><small>CINEPASS EXPRESS</small><strong>Đặt vé nhanh</strong></div>
+<label>Phim<select id="quick-film" disabled><option value="">Tất cả phim</option></select></label>
+<label>Rạp<select id="quick-cinema" disabled><option value="">Tất cả rạp</option></select></label>
+<button class="primary" disabled>Xem suất chiếu ↗</button>
+</form>
 <section id="phim" class="catalog" aria-labelledby="catalog-title">
 <div class="section-top"><div><p class="kicker"><span></span> DANH MỤC ĐIỆN ẢNH</p><h2 id="catalog-title">Khám phá phim</h2></div>
 <label class="search">⌕ <input id="search" type="search" placeholder="Tìm tên phim…" aria-label="Tìm tên phim"></label></div>

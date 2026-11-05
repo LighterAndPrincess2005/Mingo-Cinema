@@ -109,9 +109,35 @@ function renderMovies() {
       ${movieArt(movie)}<span class="rating">${e(movie.media?.year || '')}</span><span class="poster-fallback">CinePass<br>${e(movie.title)}</span></button>
       <div class="movie-body"><h3>${e(movie.title)}</h3><p class="original-title">${e(movie.media?.originalTitle || '')}</p>
       <p class="format">${e(genreNames(movie).join(' · '))}</p>
-      <p>${movie.durationMin} phút · ★ ${number(movie.ratingSummary.avg)}/10 · ${number(movie.ratingSummary.count)} đánh giá demo</p>
-      ${movie.status === 'now_showing' ? button('Xem lịch chiếu ↗', 'schedule', movie._id) : button('Xem chi tiết', 'detail', movie._id)}</div></article>`;
+      <p>${movie.durationMin} phút · ${e(movie.language)}</p>
+      <div class="movie-actions">${movie.status === 'now_showing' ? button('Đặt vé ↗', 'schedule', movie._id, 'primary') : button('Chi tiết', 'detail', movie._id)}
+      ${trailerButton(movie)}</div></div></article>`;
   }).join('') || empty('Không tìm thấy phim phù hợp.');
+}
+
+function trailerButton(movie) {
+  return Object.hasOwn(trailers, movie.slug) ? button('▶ Trailer', 'trailer', movie._id) : '';
+}
+
+function showTrailer(movie) {
+  const video = trailers[movie.slug];
+  if (!Object.hasOwn(trailers, movie.slug) || !/^[A-Za-z0-9_-]{11}$/.test(video)) return;
+  panel(movie.title, `<iframe class="trailer-frame" src="https://www.youtube-nocookie.com/embed/${video}"
+    title="Trailer ${e(movie.title)}" referrerpolicy="strict-origin-when-cross-origin"
+    allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+    <div class="card-row trailer-actions">${button('Chi tiết phim', 'detail', movie._id)}
+    ${movie.status === 'now_showing' ? button('Chọn suất ↗', 'schedule', movie._id, 'primary') : ''}
+    <a class="soft" href="https://www.youtube.com/watch?v=${video}" target="_blank" rel="noopener noreferrer">Mở trên YouTube ↗</a></div>`, 'TRAILER CHÍNH THỨC', true);
+}
+
+function openSchedule(movie = '', cinema = '') {
+  state.movie = movie;
+  state.day = '';
+  state.cinema = cinema;
+  load('Lịch chiếu', () => api('schedule', movie ? { movie } : {}), data => {
+    state.schedule = data;
+    drawSchedule();
+  });
 }
 
 function detail({ movie, people, reviews }) {
@@ -120,7 +146,8 @@ function detail({ movie, people, reviews }) {
     <p>${movie.durationMin} phút · ${e(movie.language)} · Phát hành ${e(movie.media?.year || new Date(movie.releaseDate).getFullYear())}</p>
     <p class="muted">Suất chiếu mô phỏng · ${e(movie.formats.join(' / '))} · Phân loại demo ${e(movie.ageRating)}</p>
     <p>${e(movie.synopsis)}</p>
-    ${movie.status === 'now_showing' ? button('Xem lịch chiếu ↗', 'schedule', movie._id, 'primary') : ''}
+    <div class="card-row">${movie.status === 'now_showing' ? button('Chọn suất ↗', 'schedule', movie._id, 'primary') : ''}
+    ${trailerButton(movie)}</div>
     <details class="fold"><summary>Đạo diễn & diễn viên</summary>${movie.credits.map(credit => {
       const person = people.find(person => person._id === credit.personId);
       return `<p><strong>${e(credit.name)}</strong> · ${e(({ actor: 'Diễn viên', writer: 'Biên kịch', director: 'Đạo diễn' })[credit.role] || credit.role)}
@@ -131,13 +158,14 @@ function detail({ movie, people, reviews }) {
 }
 
 function drawSchedule() {
-  const days = [...new Set(state.schedule.map(show => day(show.startTime)))];
+  const cinemaShows = state.schedule.filter(show => !state.cinema || show.cinemaId === state.cinema);
+  const days = [...new Set(cinemaShows.map(show => day(show.startTime)))];
   if (!days.includes(state.day)) state.day = days[0];
   const titles = state.catalog.movies.find(movie => movie._id === state.movie);
-  const selected = state.schedule.filter(show => day(show.startTime) === state.day &&
-    (!state.cinema || show.cinemaId === state.cinema));
+  const selected = cinemaShows.filter(show => day(show.startTime) === state.day);
   const groups = Map.groupBy(selected, show => show.cinemaId);
-  panel(titles?.title || 'Lịch chiếu', `<div class="options">${days.map(key => button(key.slice(8) + '/' + key.slice(5, 7),
+  panel(titles?.title || 'Lịch chiếu', `<div class="options schedule-days" aria-label="Ngày chiếu">${days.map(key => button(
+    e(new Intl.DateTimeFormat('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit', timeZone: vn.timeZone }).format(new Date(key + 'T12:00:00+07:00'))),
     'day', key, 'option', `aria-pressed="${key === state.day}"`)).join('')}</div>
     <label class="inline">Rạp <select id="cinema"><option value="">Tất cả rạp</option>${state.catalog.cinemas.map(cinema =>
     `<option value="${e(cinema._id)}" ${cinema._id === state.cinema ? 'selected' : ''}>${e(cinema.city)} · ${e(cinema.name)}</option>`).join('')}</select></label>
@@ -381,15 +409,12 @@ document.addEventListener('click', event => {
     case 'detail':
       load('Thông tin phim', () => api('movie', { id }), detail);
       break;
-    case 'schedule':
-      state.movie = id || '';
-      state.day = '';
-      state.cinema = '';
-      load('Lịch chiếu', () => api('schedule', state.movie ? { movie: state.movie } : {}), data => {
-        state.schedule = data;
-        drawSchedule();
-      });
+    case 'schedule': openSchedule(id); break;
+    case 'trailer': {
+      const movie = state.catalog.movies.find(item => item._id === id);
+      if (movie) showTrailer(movie);
       break;
+    }
     case 'schedule-back': drawSchedule(); break;
     case 'day':
       state.day = id;
@@ -488,6 +513,11 @@ content.addEventListener('submit', async event => {
   }
 });
 
+$('#quick-book').addEventListener('submit', event => {
+  event.preventDefault();
+  openSchedule($('#quick-film').value, $('#quick-cinema').value);
+});
+
 dialog.addEventListener('close', () => {
   request++;
   clearInterval(timer);
@@ -504,14 +534,20 @@ Promise.all([api('catalog'), api('me')]).then(([data, identity]) => {
   setIdentity(identity);
   $('#connection').textContent = '● MONGODB KẾT NỐI';
   $('#hero-index').textContent = `${data.movies.length} PHIM · ${data.cinemas.length} RẠP`;
-  const featured = data.movies.find(movie => movie.status === 'now_showing' && movie.title.length <= 35) ||
+  const available = data.movies.filter(movie => movie.status === 'now_showing');
+  for (const movie of available) $('#quick-film').add(new Option(movie.title, movie._id));
+  for (const cinema of data.cinemas) $('#quick-cinema').add(new Option(cinema.name, cinema._id));
+  for (const control of $('#quick-book').elements) control.disabled = false;
+  const featured = available.find(movie => Object.hasOwn(trailers, movie.slug) && movie.title.length <= 45) ||
     data.movies.find(movie => movie.status === 'now_showing');
   if (featured) {
     $('#hero').insertAdjacentHTML('afterbegin', movieArt(featured, true, true));
     $('#hero-title').textContent = featured.title;
     $('#hero-copy').textContent = featured.synopsis.length > 180 ? featured.synopsis.slice(0, 177) + '…' : featured.synopsis;
     $('#hero [data-act="schedule"]').dataset.id = featured._id;
-    $('#hero .eyebrow').textContent = 'PHIM NỔI BẬT · ' + featured.media.year + ' · ' + featured.durationMin + ' PHÚT';
+    $('#hero-trailer').hidden = !Object.hasOwn(trailers, featured.slug);
+    $('#hero-trailer').dataset.id = featured._id;
+    $('#hero .eyebrow').textContent = 'PHIM NỔI BẬT · ' + (featured.media?.year || '') + ' · ' + featured.durationMin + ' PHÚT';
   }
   for (const genre of data.genres) $('#genre').add(new Option(genre.name, genre._id));
   renderMovies();
