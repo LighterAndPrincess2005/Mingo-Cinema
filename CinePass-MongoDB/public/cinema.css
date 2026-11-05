@@ -19,7 +19,7 @@
 .database-hero .hero-content { max-width:670px; }
 .database-hero .hero-description { color:#f3edf9; }
 .quick-book {
-  position:relative; display:grid; grid-template-columns:1fr minmax(0,1.5fr) minmax(0,1.3fr) auto;
+  position:relative; display:grid; grid-template-columns:auto minmax(0,1.4fr) minmax(0,1fr) minmax(0,1.3fr) auto;
   gap:14px; align-items:end; background:white; border:1px solid var(--line);
   border-radius:16px; padding:17px; margin:14px 0 0; box-shadow:0 7px 20px #24173d0e;
 }
@@ -52,9 +52,10 @@
 .schedule-days button { flex:none; min-height:42px; }
 .trailer-frame { display:block; width:100%; aspect-ratio:16/9; border:0; background:#161031; border-radius:12px; }
 .trailer-actions { margin-top:16px; }
-@media(max-width:720px) {
+@media(max-width:850px) {
   .quick-book { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-  .quick-heading,.quick-book .primary { grid-column:1/-1; }
+  .quick-heading, .quick-book label:first-of-type { grid-column:1/-1; }
+  .quick-book .primary { grid-column:1/-1; }
   .database-hero { min-height:330px; }
   .database-hero:before { background:linear-gradient(90deg,#140e27f2 5%,#140e278f 75%),linear-gradient(0deg,#140e27,transparent 48%); }
 }

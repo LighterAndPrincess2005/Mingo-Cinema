@@ -17,7 +17,7 @@ const status = {
   card: 'Thẻ', momo: 'MoMo', vnpay: 'VNPay', bank_transfer: 'Chuyển khoản',
 };
 const palettes = [['#8255ff','#2d185b'],['#ef743a','#5a282b'],['#1ba68c','#134d56'],['#df5189','#61234b'],['#406ce5','#213962'],['#c5a345','#534428']];
-const state = { catalog: null, filter: 'now_showing', identity: null, schedule: [], movie: '', day: '', cinema: '', seats: new Set(), show: null };
+const state = { catalog: null, filter: 'now_showing', identity: null, schedule: [], movie: '', day: '', region: '', cinema: '', seats: new Set(), show: null };
 let request = 0;
 let timer;
 const button = (text, action, id = '', type = 'soft', attrs = '') =>
@@ -157,6 +157,30 @@ function showTrailer(movie) {
     </div>`, heading, isVideo);
 }
 
+const regions = [
+  ['north', 'Miền Bắc', 'Hà Nội'],
+  ['central', 'Miền Trung', 'Đà Nẵng'],
+  ['south', 'Miền Nam', 'TP. Hồ Chí Minh'],
+];
+const regionOptions = () => regions.map(([value, name, city]) => new Option(`${name} · ${city}`, value));
+function regionalCinemas() {
+  const region = regions.find(([value]) => value === state.region);
+  return state.catalog.cinemas.filter(cinema => !region || cinema.city === region[2]);
+}
+
+function updateQuickCinemas() {
+  const select = $('#quick-cinema');
+  const selected = select.value;
+  select.replaceChildren(new Option('Tất cả rạp', ''), ...regionalCinemas().map(cinema => new Option(cinema.name, cinema._id)));
+  if ([...select.options].some(option => option.value === selected)) select.value = selected;
+}
+
+function setRegion(value) {
+  state.region = value;
+  $('#quick-region').value = value;
+  updateQuickCinemas();
+}
+
 function openSchedule(movie = '', cinema = '', selectedDay = '') {
   state.movie = movie;
   state.day = selectedDay;
@@ -193,10 +217,11 @@ function detail({ movie, people, reviews }) {
 }
 
 function drawSchedule() {
-  const future = state.schedule.filter(show => new Date(show.startTime).getTime() > Date.now());
-  const availableCinemas = new Set(future.map(show => show.cinemaId));
-  const cinemaShows = future.filter(show => !state.cinema || show.cinemaId === state.cinema);
-  const days = [...new Set(future.map(show => day(show.startTime)))];
+  const cinemas = regionalCinemas();
+  const cinemaIds = new Set(cinemas.map(cinema => cinema._id));
+  const cinemaShows = state.schedule.filter(show => cinemaIds.has(show.cinemaId) &&
+    (!state.cinema || show.cinemaId === state.cinema) && new Date(show.startTime).getTime() > Date.now());
+  const days = [...new Set(cinemaShows.map(show => day(show.startTime)))].sort();
   if (!days.includes(state.day)) state.day = days[0];
   const titles = state.catalog.movies.find(movie => movie._id === state.movie);
   const selected = cinemaShows.filter(show => day(show.startTime) === state.day);
@@ -207,15 +232,16 @@ function drawSchedule() {
     <div class="card-row schedule-filters">
     <label class="inline">Phim <select id="schedule-film"><option value="">Tất cả phim</option>${state.catalog.movies.filter(movie => movie.status === 'now_showing').map(movie =>
     `<option value="${e(movie._id)}" ${movie._id === state.movie ? 'selected' : ''}>${e(movie.title)}</option>`).join('')}</select></label>
-    <label class="inline">Rạp <select id="cinema"><option value="">Tất cả rạp</option>${state.catalog.cinemas.filter(cinema =>
-    availableCinemas.has(cinema._id) || cinema._id === state.cinema).map(cinema =>
+    <label class="inline">Khu vực <select id="schedule-region"><option value="">Tất cả khu vực</option>${regionOptions().map(option =>
+    `<option value="${option.value}" ${option.value === state.region ? 'selected' : ''}>${e(option.text)}</option>`).join('')}</select></label>
+    <label class="inline">Rạp <select id="cinema"><option value="">Tất cả rạp</option>${cinemas.map(cinema =>
     `<option value="${e(cinema._id)}" ${cinema._id === state.cinema ? 'selected' : ''}>${e(cinema.city)} · ${e(cinema.name)}</option>`).join('')}</select></label></div>
     <div class="data-list">${[...groups].map(([id, shows]) => {
       const cinema = state.catalog.cinemas.find(cinema => cinema._id === id);
       return `<article class="record"><h3>${e(shows[0].snapshot.cinemaName)}</h3><p>${e(cinema?.address)}</p>
       <div class="card-row">${shows.map(show => button(e((state.movie ? '' : show.snapshot.movieTitle + ' · ') +
         time(show.startTime) + ' · ' + show.format + ' · ' + show.snapshot.roomName), 'seatmap', show._id, 'option')).join('')}</div></article>`;
-    }).join('') || empty('Không có suất phù hợp. Hãy chọn ngày, phim hoặc rạp khác.')}</div>`, 'BƯỚC 1 / 3 · CHỌN SUẤT', true);
+    }).join('') || empty('Chưa có suất chiếu sắp tới theo bộ lọc này. Hãy thử chọn phim, khu vực hoặc rạp khác.')}</div>`, 'BƯỚC 1 / 3 · CHỌN SUẤT', true);
 }
 
 function showSummary(show) {
@@ -507,6 +533,12 @@ document.addEventListener('click', event => {
 
 content.addEventListener('change', event => {
   if (event.target.id === 'schedule-film') openSchedule(event.target.value, state.cinema, state.day);
+  if (event.target.id === 'schedule-region') {
+    setRegion(event.target.value);
+    state.cinema = '';
+    drawSchedule();
+    $('#schedule-region').focus();
+  }
   if (event.target.id === 'cinema') {
     state.cinema = event.target.value;
     drawSchedule();
@@ -556,6 +588,7 @@ content.addEventListener('submit', async event => {
   }
 });
 
+$('#quick-region').addEventListener('change', event => setRegion(event.target.value));
 $('#quick-book').addEventListener('submit', event => {
   event.preventDefault();
   openSchedule($('#quick-film').value, $('#quick-cinema').value);
@@ -578,7 +611,8 @@ Promise.all([api('catalog'), api('me')]).then(([data, identity]) => {
   $('#hero-index').textContent = `${data.movies.length} PHIM · ${data.cinemas.length} RẠP`;
   const available = data.movies.filter(movie => movie.status === 'now_showing');
   for (const movie of available) $('#quick-film').add(new Option(movie.title, movie._id));
-  for (const cinema of data.cinemas) $('#quick-cinema').add(new Option(cinema.name, cinema._id));
+  for (const option of regionOptions()) $('#quick-region').add(option);
+  updateQuickCinemas();
   for (const control of $('#quick-book').elements) control.disabled = false;
   const featured = available.find(movie => Object.hasOwn(trailers, movie.slug) && movie.title.length <= 45) ||
     data.movies.find(movie => movie.status === 'now_showing');
